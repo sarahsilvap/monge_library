@@ -1,5 +1,10 @@
 import Catalogo from "./catalogo/page";
+import { NextUIProvider } from "@nextui-org/react";
 
 export default function App() {
-  return <Catalogo />;
+  return (
+    <NextUIProvider>
+      <Catalogo />
+    </NextUIProvider>
+  );
 }
