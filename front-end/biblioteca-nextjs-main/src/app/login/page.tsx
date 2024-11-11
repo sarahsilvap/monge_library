@@ -8,7 +8,7 @@ import { Button } from "@nextui-org/react";
 const Login = () => {
     return (
         <div className="grid grid-cols-1 md:grid-cols-2 h-screen">
-            {/* Imagem à esquerda, ocupa metade da tela */}
+            {/*Imagem à esquerda*/}
             <div className="relative w-full h-full">
                 <Image
                     src="/image/livro-login.jpg"
@@ -19,7 +19,7 @@ const Login = () => {
                 />
             </div>
 
-            {/* Container do formulário à direita, ocupa a outra metade */}
+            {/* Container do formulário*/}
             <div className="relative flex items-center justify-center bg-white shadow-lg rounded w-full flex-col">
                 <div className="absolute top-4 left-2">
                     <Link href={"/"}>
@@ -64,7 +64,7 @@ const Login = () => {
                 </div>
 
                 <div className="absolute bottom-20 text-center w-[50%] bg-gray-200 py-3 px-6 rounded-xl">
-                    <h1>Ainda não tem um usuário? <Link href="/" className="text-[#3ba580]">Criar agora</Link></h1>
+                    <h1>Ainda não tem uma conta? <Link href="/" className="text-[#3ba580]">Criar agora</Link></h1>
                 </div>
             </div>
         </div>

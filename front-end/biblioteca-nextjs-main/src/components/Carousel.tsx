@@ -70,19 +70,19 @@ const Carousel = () => {
   return (
     <div className="relative mt-10 px-20">
       <div
-        className="absolute left-0 top-0 h-full w-1/12 z-10 cursor-pointer"
+        className="absolute left-0 top-1/2 transform -translate-y-1/2 h-[50px] w-1/12 z-10 cursor-pointer"
         onMouseEnter={() => handleMouseEnter("left")}
         onMouseLeave={handleMouseLeave}
       />
       <div
-        className="absolute right-0 top-0 h-full w-1/12 z-10 cursor-pointer"
+        className="absolute right-0 top-1/2 transform -translate-y-1/2 h-[50px] w-1/12 z-10 cursor-pointer"
         onMouseEnter={() => handleMouseEnter("right")}
         onMouseLeave={handleMouseLeave}
       />
 
       <Slider ref={sliderRef} {...settings}>
         {Array.from({ length: 10 }).map((_, index) => (
-          <div className="p-5" key={index}>
+          <div className="p-5 mt-6" key={index}>
             <div
               className="bg-white rounded-md shadow-md text-center flex flex-col justify-center items-center"
               style={{ width: "180px", height: "250px" }}

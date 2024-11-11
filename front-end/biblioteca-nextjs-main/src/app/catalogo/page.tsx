@@ -12,11 +12,12 @@ const Catalogo = () => {
         Explore nossa vasta coleção de livros, e-books e outros materiais.
         Encontre seu próximo livro favorito agora!
       </p>
-      <div className="flex justify-center mt-10">
-        <Button variant="shadow">TESTE</Button>
+      <div>
+        <h1 className="absolute left-10 mb-4">Novidades</h1>
+        <Carousel className="mt-6" />
       </div>
-      <Carousel /> {/* Primeiro carrossel */}
-      <Carousel /> {/* Segundo carrossel */}
+       
+      <Carousel /> 
       <Carousel />
       <Carousel />
     </div>
