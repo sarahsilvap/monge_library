@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-
-import "./globals.css";
 import MainContainer from "@/components/MainContainer";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -14,7 +13,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="pt-br">
+      <head>
+        {/* Importando a fonte Poppins do Google Fonts */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body>
         <MainContainer>{children}</MainContainer>
       </body>

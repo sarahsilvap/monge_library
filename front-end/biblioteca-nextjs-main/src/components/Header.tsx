@@ -26,7 +26,7 @@ const Header = () => {
         <Image
           src={"/image/logobranco.png"}
           alt="logo"
-          width={300}
+          width={280}
           height={100}
         />
       </div>
@@ -37,10 +37,10 @@ const Header = () => {
             <button>
               <SearchIcon
                 fill="grey"
-                size={24}
+                size={20}
                 filled={false}
-                height={24}
-                width={24}
+                height={20}
+                width={20}
                 label="Ícone de Pesquisa"
               />
             </button>
@@ -55,8 +55,8 @@ const Header = () => {
           <Link
             className={
               path === "/catalogo" || path === "/"
-                ? "text-gray-400"
-                : "text-white hover:text-gray-400"
+                ? "text-gray-400 text-sm"
+                : "text-white hover:text-gray-400 text-sm"
             }
             href={"/"}
           >
@@ -73,11 +73,11 @@ const Header = () => {
                 <button
                   className={
                     path === "/catalogo"
-                      ? "text-gray-400"
-                      : "text-white hover:text-gray-400"
+                      ? "text-gray-400 text-sm"
+                      : "text-white hover:text-gray-400 text-sm"
                   }
                 >
-                  CATALOGO
+                  CATÁLOGO
                 </button>
               </DropdownTrigger>
               <DropdownMenu>
@@ -92,8 +92,8 @@ const Header = () => {
           <Link
             className={
               path === "/autores"
-                ? "text-gray-400"
-                : "text-white hover:text-gray-400"
+                ? "text-gray-400 text-sm"
+                : "text-white hover:text-gray-400 text-sm"
             }
             href={"./autores"}
           >
@@ -102,8 +102,8 @@ const Header = () => {
           <Link
             className={
               path === "/servicos"
-                ? "text-gray-400"
-                : "text-white hover:text-gray-400"
+                ? "text-gray-400 text-sm"
+                : "text-white hover:text-gray-400 text-sm"
             }
             href={" "}
           >
