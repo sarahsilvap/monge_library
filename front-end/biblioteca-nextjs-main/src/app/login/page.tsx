@@ -58,13 +58,13 @@ const Login = () => {
                         className="max-w-[22vw] w-full p-2 mb-6 border rounded mx-auto"
                     />
                     <Link href="/" className="text-[#3ba580] mb-6 text-sm text-center">Esqueci minha senha</Link>
-                    <button className="bg-[#194737] text-white text-xs py-3 rounded-full w-64 mt-auto mx-auto">
+                    <button className="bg-[#194737] hover:bg-[#326d59] text-white text-xs py-3 rounded-full w-64 mt-auto mx-auto">
                         ACESSAR CONTA
                     </button>
                 </div>
 
                 <div className="absolute bottom-20 text-center w-[50%] bg-gray-200 py-3 px-6 rounded-xl">
-                    <h1>Ainda não tem uma conta? <Link href="/cadastro" className="text-[#3ba580]">Criar agora</Link></h1>
+                    <h1>Ainda não tem uma conta? <Link href="/cadastro" className="text-[#3ba580] hover:text-bg-[#7fbda8]">Criar agora</Link></h1>
                 </div>
             </div>
         </div>

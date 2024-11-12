@@ -196,11 +196,10 @@ const Cadastro = () => {
                         </div>
 
                         {/* Botão de Enviar */}
-                        <div className="col-span-1 sm:col-span-2">
+                        <div className="col-start-2 col-span-2 flex justify-center">
                             <button
                                 type="submit"
-                                className="w-full p-3 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
+                                className="w-full p-3 bg-[#194737] text-white hover:bg-[#326d59] py-3 rounded-full">
                                 Enviar
                             </button>
                         </div>
