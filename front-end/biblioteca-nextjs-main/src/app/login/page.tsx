@@ -64,7 +64,7 @@ const Login = () => {
                 </div>
 
                 <div className="absolute bottom-20 text-center w-[50%] bg-gray-200 py-3 px-6 rounded-xl">
-                    <h1>Ainda não tem uma conta? <Link href="/" className="text-[#3ba580]">Criar agora</Link></h1>
+                    <h1>Ainda não tem uma conta? <Link href="/cadastro" className="text-[#3ba580]">Criar agora</Link></h1>
                 </div>
             </div>
         </div>
