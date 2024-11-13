@@ -1,7 +1,6 @@
 "use client";
 
 import "../globals.css";
-import { Button } from "@nextui-org/react";
 import Carousel from "@/components/Carousel";
 
 const Catalogo = () => {

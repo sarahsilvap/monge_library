@@ -17,6 +17,8 @@ interface FormData {
     rua: string;
     ra: string;
     num: number;
+    senha: string;
+    confirmSenha: string;
 }
 
 const Cadastro = () => {
@@ -54,13 +56,13 @@ const Cadastro = () => {
                         <Image
                             src="/image/logoverde.png"
                             alt="Logo"
-                            width={304}
+                            width={200}
                             height={73.87}
                         />
                     </Link>
                 </div>
 
-                <div className="w-full max-w-2xl bg-white p-8 rounded-lg shadow-md space-y-6">
+                <div className="w-full max-w-2xl bg-white p-6 rounded-lg shadow-lg">
                     <h2 className="text-xl font-semibold text-center mb-6">Cadastro</h2>
 
                     <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -193,6 +195,30 @@ const Cadastro = () => {
                                 className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                             />
                             {errors.cidade && <p className="text-sm text-red-500">{errors.cidade.message}</p>}
+                        </div>
+
+                        {/* Senha */}
+                        <div className="col-span-2">
+                            <label htmlFor="senha" className="block text-sm font-medium text-gray-700">Senha</label>
+                            <input
+                                id="senha"
+                                type="text"
+                                {...register('cidade', { required: 'Cidade é obrigatória' })}
+                                className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            {errors.senha && <p className="text-sm text-red-500">{errors.senha.message}</p>}
+                        </div>
+
+                        {/* Confirmar Senha */}
+                        <div className="col-span-2">
+                            <label htmlFor="confirmSenha" className="block text-sm font-medium text-gray-700">Confirmar senha</label>
+                            <input
+                                id="senha"
+                                type="text"
+                                {...register('cidade', { required: 'Cidade é obrigatória' })}
+                                className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            {errors.confirmSenha && <p className="text-sm text-red-500">{errors.confirmSenha.message}</p>}
                         </div>
 
                         {/* Botão de Enviar */}

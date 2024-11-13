@@ -33,7 +33,7 @@ const Header = () => {
 
       <div className="flex flex-col mx-auto col-span-2">
         <div className="my-auto mb-10 relative flex items-center gap-5">
-          <div className="absolute right-4 mt-1">
+          <div className="absolute right-4 mt-1 md:right-2">
             <button>
               <SearchIcon
                 fill="grey"
@@ -46,7 +46,7 @@ const Header = () => {
             </button>
           </div>
           <input
-            className="rounded-md p-2 pr-10 w-[50vw]"
+            className="rounded-md p-2 pr-10 w-[50vw] placeholder:text-sm"
             placeholder="Busque por um título, autor ou editora"
           />
         </div>
