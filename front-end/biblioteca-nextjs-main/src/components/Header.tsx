@@ -46,7 +46,7 @@ const Header = () => {
             </button>
           </div>
           <input
-            className="rounded-md p-2 pr-10 w-[50vw] placeholder:text-sm"
+            className="rounded-md p-2 pr-10 w-[40vw] placeholder:text-sm"
             placeholder="Busque por um título, autor ou editora"
           />
         </div>
@@ -54,7 +54,7 @@ const Header = () => {
         <div className="flex gap-32 mx-auto mb-4">
           <Link
             className={
-              path === "/catalogo" || path === "/"
+              path === "/" || path === "/"
                 ? "text-gray-400 text-sm"
                 : "text-white hover:text-gray-400 text-sm"
             }
@@ -87,45 +87,22 @@ const Header = () => {
                 <DropdownItem>NÃO-FICÇÃO</DropdownItem>
               </DropdownMenu>
             </Dropdown>
-          </div>
-
-          <Link
-            className={
-              path === "/autores"
-                ? "text-gray-400 text-sm"
-                : "text-white hover:text-gray-400 text-sm"
-            }
-            href={"./autores"}
-          >
-            AUTORES
-          </Link>
-          <Link
-            className={
-              path === "/servicos"
-                ? "text-gray-400 text-sm"
-                : "text-white hover:text-gray-400 text-sm"
-            }
-            href={" "}
-          >
-            CATEGORIAS
-          </Link>
+          </div>    
         </div>
       </div>
 
-      <div className="my-12 ml-5">
+      <div className="my-12 -ml-20">
         <Link href="/login" passHref>
           <Button variant="light" aria-label="Clique aqui para usuário">
-            {/* Botão com acessibilidade */}
             <UserIcon
               fill="white"
-              size={36}
+              size= {24}
               filled={false}
-              height={26}
-              width={26}
+              height={0}
+              width={0}
               label="Ícone do Usuário"
             />
-            <p className="text-white mt-0">Login</p>
-            {/* Texto abaixo do botão */}
+            <p className="text-white mt-0">Login </p>
           </Button>
         </Link>
       </div>
