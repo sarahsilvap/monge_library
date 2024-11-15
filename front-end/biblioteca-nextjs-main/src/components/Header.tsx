@@ -21,7 +21,7 @@ const Header = () => {
   const [onMouseEnter, setOnMouseEnter] = useState(false);
 
   return (
-    <div className="bg-[#204637] h-44 grid grid-cols-4 relative">
+    <div className="bg-[#204637] h-44 grid grid-cols-4 relative shadow-2xl">
       <div className="my-auto mx-auto">
         <Image
           src={"/image/logobranco.png"}

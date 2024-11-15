@@ -1,43 +1,80 @@
-import React from "react";
+"use client"; // Indica que este é um Client Component
+
+import React, { useState } from "react";
 import Image from "next/image";
-import { Navbar, NavbarBrand, NavbarContent, NavbarItem, Link, Button } from "@nextui-org/react";
+import { BiSolidBookAdd } from "react-icons/bi";
+import HeaderAdm from "@/components/HeaderAdm";
 
 const AdminPage = () => {
+  // Estado para o valor da pesquisa
+  const [query, setQuery] = useState("");
+
+  // Dados de exemplo para os livros
+  const books = [
+    {
+      id: 1,
+      title: "O Senhor dos Anéis",
+      author: "J.R.R. Tolkien",
+      year: 2013,
+      image: "/image/senhor-dos-aneis.webp"
+    },
+    {
+      id: 2,
+      title: "Harry Potter e a Pedra Filosofal",
+      author: "J.K. Rowling",
+      year: 1997,
+      image: "/image/harry-potter-e-a-pedra-filosofal.jpg"
+    },
+    {
+      id: 3,
+      title: "O Hobbit",
+      author: "J.R.R. Tolkien",
+      year: 1937,
+      image: "/image/hobbit.jpg"
+    }
+  ];
+
+  // Função para filtrar os livros com base na pesquisa
+  const filteredBooks = books.filter((book) => {
+    return (
+      book.title.toLowerCase().includes(query.toLowerCase()) ||
+      book.author.toLowerCase().includes(query.toLowerCase())
+    );
+  });
+
+  // Função para lidar com a mudança no campo de pesquisa
+  const handleSearch = (event) => {
+    setQuery(event.target.value);
+  };
+
   return (
     <>
-      <Navbar className="fixed top-0 left-0 w-full z-50 bg-white shadow-md">
-        <NavbarBrand>
-          <Link href="/">
-            <div className="relative w-32 h-8">
-              <Image
-                src="/image/logoverde.png" 
-                alt="Logo"
-                layout="fill" 
-                objectFit="contain" 
-              />
-            </div>
-          </Link>
-        </NavbarBrand>
-
-        <NavbarContent className="hidden sm:flex gap-4" justify="center">
-          <NavbarItem>
-            <Link color="foreground" href="#">Livros</Link>
-          </NavbarItem>
-          <NavbarItem isActive>
-            <Link href="#" aria-current="page">Empréstimos</Link>
-          </NavbarItem>
-          <NavbarItem>
-            <Link color="foreground" href="#">Alunos</Link>
-          </NavbarItem>
-        </NavbarContent>
-      </Navbar>
-
-      {/* Conteúdo da Página - espaço para a Navbar não sobrepor o conteúdo */}
+      <HeaderAdm />
       <div className="pt-24">
         <div className="grid grid-cols-8 gap-6">
           <div className="col-start-1 col-span-8 p-6 mx-auto">
-            {/* Título e Tabela de Livros */}
-            <h1 className="text-3xl mb-4">Gerenciar Livros</h1>
+            <div className="flex items-center mb-4 justify-between">
+              <div className="flex items-center gap-4">
+                {/* Título e Campo de Pesquisa ao lado */}
+                <h1 className="text-3xl">Gerenciar Livros</h1>
+                <button>
+                  <BiSolidBookAdd
+                    fill="#3B82F6"
+                    size={30}
+                  />
+                </button>
+              </div>
+              <div className="flex w-1/3 justify-end">
+                {/* Campo de Pesquisa */}
+                <input
+                  type="text"
+                  placeholder="Pesquisar livro por título ou autor"
+                  className="p-2 w-full rounded-md border border-gray-300"
+                  value={query}
+                  onChange={handleSearch}
+                />
+              </div>
+            </div>
 
             <table className="w-full table-auto border-collapse">
               <thead>
@@ -50,31 +87,39 @@ const AdminPage = () => {
                 </tr>
               </thead>
               <tbody>
-                {/* Exemplo de Livro */}
-                <tr>
-                  <td className="border-b p-2 text-center">
-                    <div className="relative w-28 h-40 mx-auto">
-                      <Image
-                        src="/image/senhor-dos-aneis.webp"
-                        alt="Capa do livro"
-                        layout="fill"
-                        objectFit="cover"  
-                        className="rounded-md"
-                      />
-                    </div>
-                  </td>
-                  <td className="border-b p-2 text-center">O Senhor dos Anéis</td>
-                  <td className="border-b p-2 text-center">J.R.R. Tolkien</td>
-                  <td className="border-b p-2 text-center">2013</td>
-                  <td className="border-b p-2 text-center">
-                    <button className="bg-yellow-500 text-white py-1 px-4 rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2">
-                      Editar
-                    </button>
-                    <button className="bg-red-500 text-white py-1 px-4 ml-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
-                      Excluir
-                    </button>
-                  </td>
-                </tr>
+                {/* Mapeando os livros filtrados */}
+                {filteredBooks.length > 0 ? (
+                  filteredBooks.map((book) => (
+                    <tr key={book.id}>
+                      <td className="border-b p-2 text-center">
+                        <div className="relative w-28 h-40 mx-auto">
+                          <Image
+                            src={book.image}
+                            alt="Capa do livro"
+                            layout="fill"
+                            objectFit="cover"
+                            className="rounded-md"
+                          />
+                        </div>
+                      </td>
+                      <td className="border-b p-2 text-center">{book.title}</td>
+                      <td className="border-b p-2 text-center">{book.author}</td>
+                      <td className="border-b p-2 text-center">{book.year}</td>
+                      <td className="border-b p-2 text-center">
+                        <button className="bg-yellow-500 text-white py-1 px-4 rounded hover:bg-yellow-600 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2">
+                          Editar
+                        </button>
+                        <button className="bg-red-500 text-white py-1 px-4 ml-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                          Excluir
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td className="p-3 text-center">Nenhum livro encontrado</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
