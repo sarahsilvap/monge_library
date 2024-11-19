@@ -11,14 +11,17 @@ interface MainContainerProps {
 const MainContainer = ({ children }: MainContainerProps) => {
   const route = usePathname();
 
-  const hideHeaderPaths = ["/login", "/cadastro", "/editBook", "/alunos"];
+  const hideHeaderPaths = ["/login", "/cadastro", "/books", "/alunos"];
 
   const showHeader = hideHeaderPaths.includes(route);
+
+  {/*const typeAccount = "dksajdk"*/}
 
   return (
     <>
       {!showHeader && <Header />}
-      {children}
+      {children} 
+      {/*typeAccount === "ADM"? <div>ADM</div> : (<div>Cliente</div>)*/}
     </>
   );
 };

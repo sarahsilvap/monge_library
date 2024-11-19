@@ -70,15 +70,17 @@ const Header = () => {
           >
             <Dropdown isOpen={onMouseEnter}>
               <DropdownTrigger>
-                <button
-                  className={
-                    path === "/catalogo"
-                      ? "text-gray-400 text-sm"
-                      : "text-white hover:text-gray-400 text-sm"
-                  }
-                >
-                  CATÁLOGO
-                </button>
+                <Link href="/catalogo">
+                  <button
+                    className={
+                      path === "/catalogo"
+                        ? "text-gray-400 text-sm"
+                        : "text-white hover:text-gray-400 text-sm"
+                    }
+                  >
+                    CATÁLOGO
+                  </button>
+                </Link>
               </DropdownTrigger>
               <DropdownMenu>
                 <DropdownItem>TERROR</DropdownItem>
@@ -87,7 +89,7 @@ const Header = () => {
                 <DropdownItem>NÃO-FICÇÃO</DropdownItem>
               </DropdownMenu>
             </Dropdown>
-          </div>    
+          </div>
         </div>
       </div>
 
@@ -96,7 +98,7 @@ const Header = () => {
           <Button variant="light" aria-label="Clique aqui para usuário">
             <UserIcon
               fill="white"
-              size= {24}
+              size={24}
               filled={false}
               height={0}
               width={0}

@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -6,6 +6,12 @@ import "slick-carousel/slick/slick-theme.css";
 const Carousel = () => {
   const sliderRef = useRef<any>(null);
   const intervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
+  const [isClient, setIsClient] = useState(false);  // Estado para controlar a renderização no cliente
+
+  useEffect(() => {
+    // Marca como client-side após a primeira renderização
+    setIsClient(true);
+  }, []);
 
   const settings = {
     dots: false,
@@ -66,6 +72,11 @@ const Carousel = () => {
     clearInterval(intervalRef.current);
     intervalRef.current = undefined;
   };
+
+  // Renderiza o carrossel apenas no cliente
+  if (!isClient) {
+    return null; // Retorna null no lado do servidor
+  }
 
   return (
     <div className="relative mt-10 px-20">
