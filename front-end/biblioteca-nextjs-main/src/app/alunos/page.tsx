@@ -1,8 +1,13 @@
 "use client"; // Indica que este é um Client Component
 
 import React, { useState } from "react";
-import { RiUserAddLine } from "react-icons/ri";
+import {
+  RiAddCircleFill,
+  RiDeleteBin6Fill,
+  RiUserAddLine,
+} from "react-icons/ri";
 import HeaderAdm from "@/components/HeaderAdm";
+import router from "next/router";
 
 const AdminPage = () => {
   // Estado para o valor da pesquisa
@@ -24,15 +29,15 @@ const AdminPage = () => {
           livroId: 1,
           titulo: "O Senhor dos Anéis",
           dataEmprestimo: "2024-10-01",
-          dataDevolucao: "2024-10-15"
+          dataDevolucao: "2024-10-15",
         },
         {
           livroId: 2,
           titulo: "Harry Potter e a Pedra Filosofal",
           dataEmprestimo: "2024-10-05",
-          dataDevolucao: "2024-10-20"
-        }
-      ]
+          dataDevolucao: "2024-10-20",
+        },
+      ],
     },
     {
       id: 2,
@@ -44,10 +49,10 @@ const AdminPage = () => {
           livroId: 3,
           titulo: "O Hobbit",
           dataEmprestimo: "2024-09-15",
-          dataDevolucao: "2024-10-10"
-        }
-      ]
-    }
+          dataDevolucao: "2024-10-10",
+        },
+      ],
+    },
   ]);
 
   // Função para filtrar os alunos
@@ -59,7 +64,7 @@ const AdminPage = () => {
   });
 
   // Função para ordenar os alunos
-  const sortStudents = (students) => {
+  const sortStudents = (students: Student[]) => {
     return students.sort((a, b) => {
       const valueA = sortedBy === "name" ? a.name : a.ra;
       const valueB = sortedBy === "name" ? b.name : b.ra;
@@ -73,12 +78,16 @@ const AdminPage = () => {
   };
 
   // Função para lidar com a mudança no campo de pesquisa
-  const handleSearch = (event) => {
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
   };
 
   // Função para adicionar empréstimo
-  const addEmprestimo = (studentId, livroId, titulo) => {
+  const addEmprestimo = (
+    studentId: number,
+    livroId: number,
+    titulo: string
+  ) => {
     const updatedStudents = students.map((student) => {
       if (student.id === studentId) {
         const newEmprestimo = {
@@ -87,7 +96,10 @@ const AdminPage = () => {
           dataEmprestimo: new Date().toISOString().split("T")[0],
           dataDevolucao: "", // Pode ser preenchido depois
         };
-        return { ...student, emprestimos: [...student.emprestimos, newEmprestimo] };
+        return {
+          ...student,
+          emprestimos: [...student.emprestimos, newEmprestimo],
+        };
       }
       return student;
     });
@@ -95,7 +107,7 @@ const AdminPage = () => {
   };
 
   // Função para remover empréstimo
-  const removeEmprestimo = (studentId, livroId) => {
+  const removeEmprestimo = (studentId: number, livroId: number) => {
     const updatedStudents = students.map((student) => {
       if (student.id === studentId) {
         const updatedEmprestimos = student.emprestimos.filter(
@@ -109,7 +121,7 @@ const AdminPage = () => {
   };
 
   // Função para alternar a ordenação
-  const handleSortChange = (sortBy) => {
+  const handleSortChange = (sortBy: string) => {
     const newSortOrder = sortOrder === "asc" ? "desc" : "asc";
     setSortOrder(newSortOrder);
     setSortedBy(sortBy);
@@ -133,7 +145,7 @@ const AdminPage = () => {
               <div className="flex items-center gap-4">
                 <h1 className="text-3xl">Gerenciar Alunos</h1>
                 <button>
-                  <RiUserAddLine fill="#3B82F6" size={26} />
+                  <RiUserAddLine color="#3B82F6" size={26} />
                 </button>
               </div>
               <div className="flex w-1/3 justify-end">
@@ -161,10 +173,15 @@ const AdminPage = () => {
                     className="p-3 border-b rounded-md min-w-[300px] cursor-pointer"
                     onClick={() => handleSortChange("name")}
                   >
-                    Nome {sortedBy === "name" && (sortOrder === "asc" ? "↑" : "↓")}
+                    Nome{" "}
+                    {sortedBy === "name" && (sortOrder === "asc" ? "↑" : "↓")}
                   </th>
-                  <th className="p-3 border-b rounded-md min-w-[300px]">Empréstimos</th>
-                  <th className="p-3 border-b rounded-md min-w-[300px]">Ações</th>
+                  <th className="p-3 border-b rounded-md min-w-[300px]">
+                    Empréstimos
+                  </th>
+                  <th className="p-3 border-b rounded-md min-w-[300px]">
+                    Ações
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -177,12 +194,15 @@ const AdminPage = () => {
                         {student.emprestimos.length > 0 ? (
                           student.emprestimos.map((emp) => (
                             <li key={emp.livroId}>
-                              {emp.titulo} - Devolução: {emp.dataDevolucao || "Pendente"}
+                              {emp.titulo} - Devolução:
+                              {emp.dataDevolucao}
                               <button
                                 className="bg-red-500 text-white py-1 px-2 ml-2 rounded"
-                                onClick={() => removeEmprestimo(student.id, emp.livroId)}
+                                onClick={() =>
+                                  removeEmprestimo(student.id, emp.livroId)
+                                }
                               >
-                                Remover
+                                <RiDeleteBin6Fill />
                               </button>
                             </li>
                           ))
@@ -193,10 +213,10 @@ const AdminPage = () => {
                     </td>
                     <td className="border-b p-2 text-center">
                       <button
-                        className="bg-green-500 text-white py-1 px-4 rounded"
+                        className="bg-green-500 text-white py-1 px-4 rounded flex items-center gap-2"
                         onClick={() => addEmprestimo(student.id, 3, "O Hobbit")}
                       >
-                        Adicionar Empréstimo
+                        <RiAddCircleFill /> Adicionar Empréstimo
                       </button>
                     </td>
                   </tr>

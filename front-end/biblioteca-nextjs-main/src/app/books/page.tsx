@@ -24,7 +24,7 @@ const AdminPage = () => {
   );
 
   // Função para lidar com a mudança no campo de pesquisa
-  const handleSearch = (event) => {
+  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
   };
 
