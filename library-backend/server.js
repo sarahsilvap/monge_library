@@ -15,10 +15,7 @@ app.use(express.json());
 const authRoutes = require('./routes/authRoutes')
 
 // Conexão ao MongoDB
-mongoose.connect('mongodb+srv://sarahspereira17:Sarah170103@library.rrmdm.mongodb.net/?retryWrites=true&w=majority&appName=library', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
+mongoose.connect('mongodb+srv://sarahspereira17:Sarah170103@library.rrmdm.mongodb.net/?retryWrites=true&w=majority&appName=library')
 .then(() => console.log('MongoDB conectado'))
 .catch(err => console.error('Erro ao conectar ao MongoDB', err));
 

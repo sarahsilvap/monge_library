@@ -6,6 +6,6 @@ const bookSchema = new mongoose.Schema({
     year: {type: Number}
 })
 
-//exportanto o modelo paa salvar os livros
+//exportanto o modelo para salvar os livros
 
 module.exports = mongoose.model('Book', bookSchema);
