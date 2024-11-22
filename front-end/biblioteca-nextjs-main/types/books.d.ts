@@ -1,7 +1,8 @@
 interface Books {
-    id: number,
+    _id?: string,
+    id: string,
     title: string,
     author: string,
     year: number,
-    image: string;
+    image: string | File;
 }

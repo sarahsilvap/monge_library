@@ -42,7 +42,6 @@ const Cadastro = () => {
                 />
             </div>
 
-            {/* Formulário */}
             <div className="relative flex items-center justify-center bg-white shadow-lg rounded-lg w-full p-6 md:p-8">
                 <div className="absolute top-4 left-2">
                     <Link href={"/login"}>
@@ -62,9 +61,7 @@ const Cadastro = () => {
                         />
                     </Link>
                 </div>
-
                 <FormCadastro />
-                
             </div>
         </div>
     );

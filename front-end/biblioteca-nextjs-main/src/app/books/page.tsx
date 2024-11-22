@@ -11,6 +11,22 @@ const AdminPage = () => {
   const [showForm, setShowForm] = useState(false); // Controla a visibilidade do modal
   const [editingBook, setEditingBook] = useState<Books | null>(null); // Livro a ser editado
   const [books, setBooks] = useState<Books[] | null>(null);
+  const [imageSrc, setImageSrc] = useState<string | null>(null);  // Armazenar base64 da imagem
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+
+      // Lê o arquivo como uma URL base64
+      reader.onloadend = () => {
+        setImageSrc(reader.result as string);  // Define a imagem base64 no estado
+      };
+
+      // Lê o arquivo
+      reader.readAsDataURL(file);
+    }
+  };
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -70,7 +86,9 @@ const AdminPage = () => {
 
         if (response.ok) {
           const updatedBook = await response.json();
-          setBooks(books?.map((book) => (book._id === updatedBook._id ? updatedBook : book))); // Alteração de `id` para `_id`
+          setBooks((books ?? []).map((book) =>
+            book._id === updatedBook._id ? updatedBook : book
+          ));
           setShowForm(false);
         } else {
           alert('Erro ao atualizar o livro!');
@@ -100,9 +118,9 @@ const AdminPage = () => {
   };
 
   // Função para excluir um livro
-  const handleDeleteBook = async (bookId: string) => {  // Alteração de `number` para `string`
+  const handleDeleteBook = async (bookId: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/books/${bookId}`, {  // Alteração de `id` para `_id`
+      const response = await fetch(`http://localhost:5000/api/books/${bookId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -110,7 +128,7 @@ const AdminPage = () => {
       });
 
       if (response.ok) {
-        setBooks(books?.filter((book) => book._id !== bookId));  // Alteração de `id` para `_id`
+        setBooks((books ?? []).filter((book) => book._id !== bookId));
         alert('Livro excluído com sucesso!')
       } else {
         alert('Erro ao excluir o livro!');
@@ -138,10 +156,9 @@ const AdminPage = () => {
               <div className="flex w-1/3 justify-end">
                 {/* Campo de Pesquisa */}
                 <input
-                  type="text"
+                  type="file"
                   placeholder="Pesquisar livro por título ou autor"
                   className="p-2 w-full rounded-md border border-gray-300"
-                  value={query}
                   onChange={handleSearch}
                 />
               </div>
@@ -172,13 +189,9 @@ const AdminPage = () => {
                     <tr key={book._id}>
                       <td className="border-b p-2 text-center">
                         <div className="relative w-28 h-40 mx-auto">
-                          <Image
-                            src={book.image}
-                            alt="Capa do livro"
-                            layout="fill"
-                            objectFit="cover"
-                            className="rounded-md"
-                          />
+                          {imageSrc && (
+                            <img src={imageSrc} alt="Book cover" width={500} height={500} />
+                          )}
                         </div>
                       </td>
                       <td className="border-b p-2 text-center">{book.title}</td>
@@ -194,7 +207,7 @@ const AdminPage = () => {
                         </button>
                         <button
                           className="bg-red-500 text-white py-1 px-4 ml-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                          onClick={() => handleDeleteBook(book._id)} 
+                          onClick={() => handleDeleteBook(book._id ?? '')}
                         >
                           Excluir
                         </button>

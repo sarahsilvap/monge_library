@@ -1,32 +1,36 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
+//ObjectId import { ObjectId } from 'mongodb';
 
 const BookModal: React.FC<BookModalProps> = ({ showForm, editingBook, onClose, onSubmit }) => {
-    const [bookData, setBookData] = useState({
+    const [bookData, setBookData] = useState<Books>({
+        id: '',
         title: '',
         author: '',
         year: 0,
-        image: '', // Para armazenar a URL ou o arquivo da imagem
-    });
-
-    // Use o useEffect para preencher os dados do livro caso esteja editando
-    useEffect(() => {
+        image: '', // Inicialmente é uma string vazia
+      });
+    
+      // UseEffect para preencher os dados caso esteja editando
+      useEffect(() => {
         if (editingBook) {
-            setBookData({
-                title: editingBook.title,
-                author: editingBook.author,
-                year: editingBook.year,
-                image: editingBook.image,
-            });
+          setBookData({
+            id: editingBook.id,
+            title: editingBook.title,
+            author: editingBook.author,
+            year: editingBook.year,
+            image: editingBook.image,  // Pode ser string ou File dependendo do tipo
+          });
         } else {
-            setBookData({
-                title: '',
-                author: '',
-                year: 0,
-                image: '',
-            });
+          setBookData({
+            id: '',
+            title: '',
+            author: '',
+            year: 0,
+            image: '',
+          });
         }
-    }, [editingBook]);
+      }, [editingBook]);
 
     // Lidar com as mudanças nos campos de entrada
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

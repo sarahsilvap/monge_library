@@ -1,7 +1,6 @@
 const express = require("express");
 const multer = require("multer");
 const path = require("path");
-const Book = require("../models/Book"); // Importando o modelo do livro
 
 const router = express.Router();
 
