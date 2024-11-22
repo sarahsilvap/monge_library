@@ -11,7 +11,7 @@ const Catalogo = () => {
         <h1 className="absolute left-10 font-medium text-lg">Novidades</h1>
         <Carousel />
       </div>
-       
+      
       <Carousel /> 
       <Carousel />
       <Carousel />

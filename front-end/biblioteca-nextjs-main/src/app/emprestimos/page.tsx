@@ -4,12 +4,11 @@ import React, { useState } from "react";
 import {
   RiAddCircleFill,
   RiDeleteBin6Fill,
-  RiUserAddLine,
 } from "react-icons/ri";
 import HeaderAdm from "@/components/HeaderAdm";
 import router from "next/router";
 
-const AdminPage = () => {
+const Emprestimos = () => {
   // Estado para o valor da pesquisa
   const [query, setQuery] = useState("");
 
@@ -143,10 +142,7 @@ const AdminPage = () => {
           <div className="col-start-1 col-span-8 p-6 mx-auto">
             <div className="flex items-center mb-4 justify-between">
               <div className="flex items-center gap-4">
-                <h1 className="text-3xl">Gerenciar Alunos</h1>
-                <button>
-                  <RiUserAddLine color="#3B82F6" size={26} />
-                </button>
+                <h1 className="text-3xl">Gerenciar Empréstimos</h1>
               </div>
               <div className="flex w-1/3 justify-end">
                 {/* Campo de Pesquisa */}
@@ -240,4 +236,4 @@ const AdminPage = () => {
   );
 };
 
-export default AdminPage;
+export default Emprestimos;

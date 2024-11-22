@@ -27,10 +27,10 @@ const HeaderAdm = () => {
                     <Link color="foreground" href="/books">Livros</Link>
                 </NavbarItem>
                 <NavbarItem>
-                    <Link color="foreground" href="#">Empréstimos</Link>
+                    <Link color="foreground" href="/emprestimos">Empréstimos</Link>
                 </NavbarItem>
                 <NavbarItem>
-                    <Link color="foreground" href="/alunos">Alunos</Link>
+                    <Link color="foreground" href="/">Alunos</Link>
                 </NavbarItem>
             </NavbarContent>
         </Navbar>

@@ -11,7 +11,7 @@ interface MainContainerProps {
 const MainContainer = ({ children }: MainContainerProps) => {
   const route = usePathname();
 
-  const hideHeaderPaths = ["/login", "/cadastro", "/books", "/alunos"];
+  const hideHeaderPaths = ["/login", "/cadastro", "/books", "/alunos", "/emprestimos"];
 
   const showHeader = hideHeaderPaths.includes(route);
 

@@ -43,7 +43,7 @@ exports.login = async (req, res) => {
         // Compara a senha fornecida com a senha armazenada
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) return res.status(400).json({
-             error: 'Senha incorreta' });
+            error: 'Senha incorreta' });
 
         // Cria web token
         const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, 
