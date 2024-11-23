@@ -21,7 +21,8 @@ router.get('/', async (req, res) => {
         const books = await Book.find();
         res.status(200).json(books);
     } catch (error) {
-        res.status(500).json({ message: 'Erro ao buscar livros', error }); // Corrigido 'livro' para 'livros'
+        console.error("Erro ao criar livro:", error); // Exibe o erro no console do servidor
+        res.status(500).json({ message: 'Erro ao criar livro', error: error.message });
     }
 });
 

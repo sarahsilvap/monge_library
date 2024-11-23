@@ -156,7 +156,7 @@ const AdminPage = () => {
               <div className="flex w-1/3 justify-end">
                 {/* Campo de Pesquisa */}
                 <input
-                  type="file"
+                  type="text"
                   placeholder="Pesquisar livro por título ou autor"
                   className="p-2 w-full rounded-md border border-gray-300"
                   onChange={handleSearch}
