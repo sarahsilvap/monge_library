@@ -4,27 +4,20 @@ import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { BiSolidBookAdd } from "react-icons/bi";
 import HeaderAdm from "@/components/HeaderAdm";
-import BookModal from "@/components/ModalBooks";  // Importando o componente do modal
+import BookModal from "@/components/ModalBooks";
 
 const AdminPage = () => {
   const [query, setQuery] = useState(""); // Estado para armazenar a pesquisa
   const [showForm, setShowForm] = useState(false); // Controla a visibilidade do modal
   const [editingBook, setEditingBook] = useState<Books | null>(null); // Livro a ser editado
   const [books, setBooks] = useState<Books[] | null>(null);
-  const [imageSrc, setImageSrc] = useState<string | null>(null);  // Armazenar base64 da imagem
+  const [imageSrc, setImageSrc] = useState<string | null>(null); // Armazenar base64 da imagem
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-
-      // Lê o arquivo como uma URL base64
-      reader.onloadend = () => {
-        setImageSrc(reader.result as string);  // Define a imagem base64 no estado
-      };
-
-      // Lê o arquivo
-      reader.readAsDataURL(file);
+      const objectURL = URL.createObjectURL(file); // Create a temporary URL for the file
+      setImageSrc(objectURL);
     }
   };
 
@@ -43,10 +36,13 @@ const AdminPage = () => {
   }, []); // A dependência vazia faz a chamada apenas uma vez, ao carregar a página.
 
   // Função para filtrar os livros com base na pesquisa
-  const filteredBooks = books ? books.filter((book) =>
-    book.title.toLowerCase().includes(query.toLowerCase()) ||
-    book.author.toLowerCase().includes(query.toLowerCase())
-  ) : [];
+  const filteredBooks = books
+    ? books.filter(
+        (book) =>
+          book.title.toLowerCase().includes(query.toLowerCase()) ||
+          book.author.toLowerCase().includes(query.toLowerCase())
+      )
+    : [];
 
   // Função para lidar com a mudança no campo de pesquisa
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -68,74 +64,81 @@ const AdminPage = () => {
   // Função para fechar o modal
   const handleCloseModal = () => {
     setShowForm(false);
-    setEditingBook(null); // Limpa o estado do livro em edição
+    setEditingBook(null);
   };
 
   // Função para salvar ou atualizar um livro
   const handleSubmit = async (bookData: Books) => {
-    try {
-      if (editingBook) {
-        // Atualiza o livro existente (PUT request)
-        const response = await fetch(`http://localhost:5000/api/books/${editingBook._id}`, { // Alteração de `id` para `_id`
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(bookData),
-        });
+    const formData = new FormData();
 
-        if (response.ok) {
-          const updatedBook = await response.json();
-          setBooks((books ?? []).map((book) =>
-            book._id === updatedBook._id ? updatedBook : book
-          ));
-          setShowForm(false);
-        } else {
-          alert('Erro ao atualizar o livro!');
-        }
+    formData.append("title", bookData.title);
+    formData.append("author", bookData.author);
+    formData.append("year", bookData.year.toString());
+
+    if (imageSrc) {
+      const file = imageSrc as File;  // Agora imageSrc será um arquivo real (não base64)
+      formData.append("coverImage", file);
+    }
+
+    try {
+      let response;
+      if (editingBook) {
+        // Atualiza livro existente (PUT request)
+        response = await fetch(`http://localhost:5000/api/books/${editingBook._id}`, {
+          method: "PUT",
+          body: formData,  // Passa o FormData diretamente para o corpo da requisição
+        });
       } else {
         // Adiciona um novo livro (POST request)
-        const response = await fetch('http://localhost:5000/api/books', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(bookData),
+        response = await fetch("http://localhost:5000/api/books", {
+          method: "POST",
+          body: formData,  // Passa o FormData diretamente para o corpo da requisição
         });
+      }
 
-        if (response.ok) {
-          const newBook = await response.json();
-          setBooks(books ? [...books, newBook] : [newBook]);
-          setShowForm(false);
-        } else {
-          alert('Erro ao adicionar o livro!');
-        }
+      if (response.ok) {
+        const newBook = await response.json();
+        setBooks((prevBooks) => {
+          if (editingBook) {
+            return prevBooks.map((book) =>
+              book._id === newBook._id ? newBook : book
+            );
+          } else {
+            return [...prevBooks, newBook];
+          }
+        });
+        setShowForm(false);  // Fecha o modal
+      } else {
+        alert("Erro ao salvar o livro!");
       }
     } catch (error) {
-      console.error('Erro ao enviar a requisição:', error);
-      alert('Erro na requisição.');
+      console.error("Erro ao enviar a requisição:", error);
+      alert("Erro ao enviar o livro.");
     }
   };
 
   // Função para excluir um livro
   const handleDeleteBook = async (bookId: string) => {
     try {
-      const response = await fetch(`http://localhost:5000/api/books/${bookId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `http://localhost:5000/api/books/${bookId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (response.ok) {
         setBooks((books ?? []).filter((book) => book._id !== bookId));
-        alert('Livro excluído com sucesso!')
+        alert("Livro excluído com sucesso!");
       } else {
-        alert('Erro ao excluir o livro!');
+        alert("Erro ao excluir o livro!");
       }
     } catch (error) {
-      console.error('Erro ao enviar a requisição de exclusão', error);
-      alert('Erro na requisição.');
+      console.error("Erro ao enviar a requisição de exclusão", error);
+      alert("Erro na requisição.");
     }
   };
 
@@ -176,11 +179,19 @@ const AdminPage = () => {
             <table className="w-full table-auto border-collapse">
               <thead>
                 <tr>
-                  <th className="p-3 border-b rounded-md min-w-[150px]">Capa</th>
-                  <th className="p-3 border-b rounded-md min-w-[300px]">Título</th>
-                  <th className="p-3 border-b rounded-md min-w-[300px]">Autor</th>
+                  <th className="p-3 border-b rounded-md min-w-[150px]">
+                    Capa
+                  </th>
+                  <th className="p-3 border-b rounded-md min-w-[300px]">
+                    Título
+                  </th>
+                  <th className="p-3 border-b rounded-md min-w-[300px]">
+                    Autor
+                  </th>
                   <th className="p-3 border-b rounded-md min-w-[150px]">Ano</th>
-                  <th className="p-3 border-b rounded-md min-w-[150px]">Ações</th>
+                  <th className="p-3 border-b rounded-md min-w-[150px]">
+                    Ações
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -189,13 +200,20 @@ const AdminPage = () => {
                     <tr key={book._id}>
                       <td className="border-b p-2 text-center">
                         <div className="relative w-28 h-40 mx-auto">
-                          {imageSrc && (
-                            <img src={imageSrc} alt="Book cover" width={500} height={500} />
+                          {book.coverImage && (
+                            <Image
+                              src={book.coverImage} // A URL da imagem ou a base64 vinda do banco de dados
+                              alt="Book cover"
+                              width={112} // Ajuste do tamanho da imagem
+                              height={160} // Ajuste do tamanho da imagem
+                            />
                           )}
                         </div>
                       </td>
                       <td className="border-b p-2 text-center">{book.title}</td>
-                      <td className="border-b p-2 text-center">{book.author}</td>
+                      <td className="border-b p-2 text-center">
+                        {book.author}
+                      </td>
                       <td className="border-b p-2 text-center">{book.year}</td>
                       <td className="border-b p-2 text-center">
                         {/* Botões de Ação */}
@@ -207,7 +225,7 @@ const AdminPage = () => {
                         </button>
                         <button
                           className="bg-red-500 text-white py-1 px-4 ml-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                          onClick={() => handleDeleteBook(book._id ?? '')}
+                          onClick={() => handleDeleteBook(book._id ?? "")}
                         >
                           Excluir
                         </button>
