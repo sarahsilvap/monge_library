@@ -3,108 +3,97 @@ import Image from "next/image";
 
 interface BookModalProps {
     showForm: boolean;
-    editingBook?: Books;  // Passando a tipagem Books (se estiver editando um livro)
+    editingBook?: Books;
     onClose: () => void;
-    onSubmit: (book: Books) => void;  // Função para lidar com o envio de dados
+    onSubmit: (book: Books) => void;
 }
 
 const BookModal: React.FC<BookModalProps> = ({ showForm, editingBook, onClose, onSubmit }) => {
     const [bookData, setBookData] = useState<Books>({
-        id: '',
+        _id: '',
         title: '',
         author: '',
         year: 0,
-        image: '',  // Inicialmente a imagem é uma string vazia
+        coverImage: '', 
     });
 
-    // UseEffect para preencher os dados caso esteja editando
     useEffect(() => {
         if (editingBook) {
             setBookData({
-                id: editingBook.id,
+                _id: editingBook._id,
                 title: editingBook.title,
                 author: editingBook.author,
                 year: editingBook.year,
-                image: editingBook.image,  // Pode ser uma string ou File dependendo do tipo
+                coverImage: editingBook.coverImage,
             });
         } else {
             setBookData({
-                id: '',
+                _id: '',
                 title: '',
                 author: '',
                 year: 0,
-                image: '',
+                coverImage: '',
             });
         }
     }, [editingBook]);
 
-    // Lidar com as mudanças nos campos de entrada
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setBookData({ ...bookData, [name]: value });
     };
 
-    // Lidar com a mudança da imagem
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setBookData({ ...bookData, image: file });
+            setBookData({ ...bookData, coverImage: file });
         }
     };
 
-    // Função de envio do formulário
     const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
         const formData = new FormData();
-
-        // Adiciona os dados do livro ao FormData
         formData.append('title', bookData.title);
         formData.append('author', bookData.author);
         formData.append('year', bookData.year.toString());
 
-        // Se a imagem for um arquivo (tipo File), adiciona a imagem ao FormData
-        if (bookData.image instanceof File) {
-            formData.append('coverImage', bookData.image);
+        if (bookData.coverImage instanceof File) {
+            formData.append('coverImage', bookData.coverImage);
         }
 
         try {
             let response;
             if (editingBook) {
-                // Se for um livro existente, faça a requisição PUT
                 response = await fetch(`http://localhost:5000/api/books/${editingBook._id}`, {
                     method: 'PUT',
-                    body: formData,  // Envia o FormData, que o navegador vai processar corretamente como 'multipart/form-data'
+                    body: formData,
                 });
             } else {
-                // Para adicionar um novo livro
                 response = await fetch('http://localhost:5000/api/books', {
                     method: 'POST',
-                    body: formData,  // Também enviando FormData
+                    body: formData,
                 });
             }
 
             if (response.ok) {
                 const newBook = await response.json();
-            // Ao adicionar ou editar o livro, agora 'newBook.coverImage' contém a URL completa
-            onSubmit({
-                ...newBook,
-                image: `http://localhost:5000${newBook.coverImage}`,  // Garante que a URL completa é passada
-            });
-            onClose();  // Fecha o modal
-        } else {
-            console.error('Erro ao enviar o livro');
-        }
-    } catch (error) {
-        console.error('Erro ao enviar o livro:', error);
+                onSubmit({
+                    ...newBook,
+                    coverImage: `http://localhost:5000${newBook.coverImage}`,
+                });
+                onClose();
+            } else {
+                console.error('Erro ao enviar o livro');
+            }
+        } catch (error) {
+            console.error('Erro ao enviar o livro:', error);
         }
     };
 
     const getImageSrc = () => {
-        if (bookData.image instanceof File) {
-            return URL.createObjectURL(bookData.image);
+        if (bookData.coverImage instanceof File) {
+            return URL.createObjectURL(bookData.coverImage);
         }
-        return `http://localhost:5000${bookData.image}`; 
+        return `http://localhost:5000${bookData.coverImage}`;
     };
 
     if (!showForm) return null;
@@ -151,12 +140,12 @@ const BookModal: React.FC<BookModalProps> = ({ showForm, editingBook, onClose, o
                         <label htmlFor="cover-photo" className="block text-sm font-medium text-gray-900">Adicionar foto</label>
                         <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
                             <div className="text-center">
-                                {bookData.image && (
+                                {bookData.coverImage && (
                                     <Image
-                                    src={`http://localhost:5000/uploads/${bookData.image}`}
+                                        src={getImageSrc()}
                                         alt="Foto do livro"
                                         className="mx-auto w-28 h-40 object-cover mb-4"
-                                        width={100}  // Defina a largura desejada
+                                        width={100}
                                         height={150}
                                     />
                                 )}

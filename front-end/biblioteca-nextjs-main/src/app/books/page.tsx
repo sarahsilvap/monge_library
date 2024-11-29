@@ -1,7 +1,6 @@
 "use client"; // Este é um componente de cliente (React Client Component)
 
 import React, { useState, useEffect } from "react";
-import Image from "next/image";
 import { BiSolidBookAdd } from "react-icons/bi";
 import HeaderAdm from "@/components/HeaderAdm";
 import BookModal from "@/components/ModalBooks";
@@ -33,9 +32,9 @@ const AdminPage = () => {
     };
 
     fetchBooks();
-  }, []); // A dependência vazia faz a chamada apenas uma vez, ao carregar a página.
+  }, []);
 
-  // Função para filtrar os livros com base na pesquisa
+  // Função para filtrar os livros 
   const filteredBooks = books
     ? books.filter(
       (book) =>
@@ -44,7 +43,7 @@ const AdminPage = () => {
     )
     : [];
 
-  // Função para lidar com a mudança no campo de pesquisa
+  // Função busca
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
   };
@@ -55,7 +54,7 @@ const AdminPage = () => {
     setShowForm(true);
   };
 
-  // Função para abrir o modal de edição de um livro
+  // Função para edição de um livro
   const handleEditBook = (book: Books) => {
     setEditingBook(book); // Preenche o modal com os dados do livro a ser editado
     setShowForm(true);
@@ -107,7 +106,7 @@ const AdminPage = () => {
               book._id === newBook._id ? newBook : book
             );
           } else {
-            return [...prevBooks, newBook];
+            return [...prevBooks, newBook]; // Apenas adiciona o novo livro
           }
         });
         setShowForm(false);  // Fecha o modal
@@ -207,10 +206,10 @@ const AdminPage = () => {
                         <div className="relative w-28 h-40 mx-auto">
                           {book.coverImage && (
                             <img
-                            src={`http://localhost:5000${book.coverImage}`} // Certifique-se de concatenar a URL corretamente
-                            alt="Foto do livro"
-                            className="mx-auto w-28 h-40 object-cover mb-4"
-                          />
+                              src={`http://localhost:5000${book.coverImage}`} // Certifique-se de concatenar a URL corretamente
+                              alt="Foto do livro"
+                              className="mx-auto w-28 h-40 object-cover mb-4"
+                            />
                           )}
                         </div>
                       </td>

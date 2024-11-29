@@ -71,15 +71,26 @@ router.get("/", async (req, res) => {
 // **** ATUALIZAÇÃO (PUT) ****
 router.put("/:id", upload.single("coverImage"), async (req, res) => {
     const { title, author, year } = req.body;
-    const coverImage = req.file ? `/uploads/${req.file.filename}` : null;
+
+    let coverImage = req.body.coverImage || null; // Mantém a imagem atual caso não seja enviada uma nova
+
+    // Se o arquivo foi enviado, atualiza o caminho da imagem
+    if (req.file) {
+        coverImage = `/uploads/${req.file.filename}`; // Gera o caminho correto da imagem
+    }
 
     try {
         const updatedBook = await Book.findByIdAndUpdate(
             req.params.id,
             { title, author, year, coverImage },
-            { new: true }
+            { new: true } // Retorna o livro atualizado
         );
-        res.status(200).json(updatedBook);
+
+        if (!updatedBook) {
+            return res.status(404).json({ message: "Livro não encontrado" });
+        }
+
+        res.status(200).json(updatedBook); // Retorna o livro atualizado
     } catch (error) {
         res.status(500).json({ message: "Erro ao atualizar livro", error });
     }
