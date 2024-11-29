@@ -1,6 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-//ObjectId import { ObjectId } from 'mongodb';
+
+interface BookModalProps {
+    showForm: boolean;
+    editingBook?: Books;  // Passando a tipagem Books (se estiver editando um livro)
+    onClose: () => void;
+    onSubmit: (book: Books) => void;  // Função para lidar com o envio de dados
+}
 
 const BookModal: React.FC<BookModalProps> = ({ showForm, editingBook, onClose, onSubmit }) => {
     const [bookData, setBookData] = useState<Books>({
@@ -8,29 +14,29 @@ const BookModal: React.FC<BookModalProps> = ({ showForm, editingBook, onClose, o
         title: '',
         author: '',
         year: 0,
-        image: '', // Inicialmente é uma string vazia
-      });
-    
-      // UseEffect para preencher os dados caso esteja editando
-      useEffect(() => {
+        image: '',  // Inicialmente a imagem é uma string vazia
+    });
+
+    // UseEffect para preencher os dados caso esteja editando
+    useEffect(() => {
         if (editingBook) {
-          setBookData({
-            id: editingBook.id,
-            title: editingBook.title,
-            author: editingBook.author,
-            year: editingBook.year,
-            image: editingBook.image,  // Pode ser string ou File dependendo do tipo
-          });
+            setBookData({
+                id: editingBook.id,
+                title: editingBook.title,
+                author: editingBook.author,
+                year: editingBook.year,
+                image: editingBook.image,  // Pode ser uma string ou File dependendo do tipo
+            });
         } else {
-          setBookData({
-            id: '',
-            title: '',
-            author: '',
-            year: 0,
-            image: '',
-          });
+            setBookData({
+                id: '',
+                title: '',
+                author: '',
+                year: 0,
+                image: '',
+            });
         }
-      }, [editingBook]);
+    }, [editingBook]);
 
     // Lidar com as mudanças nos campos de entrada
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,75 +56,53 @@ const BookModal: React.FC<BookModalProps> = ({ showForm, editingBook, onClose, o
     const handleFormSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        let imageUrl = bookData.image;
+        const formData = new FormData();
 
-        // Se a imagem for um arquivo, faça o upload
+        // Adiciona os dados do livro ao FormData
+        formData.append('title', bookData.title);
+        formData.append('author', bookData.author);
+        formData.append('year', bookData.year.toString());
+
+        // Se a imagem for um arquivo (tipo File), adiciona a imagem ao FormData
         if (bookData.image instanceof File) {
-            const formData = new FormData();
-            formData.append('image', bookData.image);
-
-            try {
-                const response = await fetch('http://localhost:5000/api/upload', {
-                    method: 'POST',
-                    body: formData,
-                });
-
-                const data = await response.json();
-                imageUrl = data.imageUrl; // Supondo que o servidor retorne a URL da imagem
-            } catch (error) {
-                console.error('Erro ao fazer upload da imagem:', error);
-                return;
-            }
+            formData.append('coverImage', bookData.image);
         }
 
-        // Prepare os dados do livro
-        const updatedBookData = {
-            ...bookData,
-            image: imageUrl,
-        };
-
-        // Verifique se estamos editando um livro existente
-        if (editingBook) {
-            // Se for um livro existente, faça uma requisição PUT
-            const response = await fetch(`http://localhost:5000/api/books/${editingBook._id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updatedBookData),
-            });
-
-            if (response.ok) {
-                // Sucesso ao atualizar o livro
-                onSubmit(updatedBookData);
-                onClose(); // Fechar o modal após a atualização
+        try {
+            let response;
+            if (editingBook) {
+                // Se for um livro existente, faça a requisição PUT
+                response = await fetch(`http://localhost:5000/api/books/${editingBook._id}`, {
+                    method: 'PUT',
+                    body: formData,  // Envia o FormData, que o navegador vai processar corretamente como 'multipart/form-data'
+                });
             } else {
-                console.error('Erro ao atualizar o livro');
+                // Para adicionar um novo livro
+                response = await fetch('http://localhost:5000/api/books', {
+                    method: 'POST',
+                    body: formData,  // Também enviando FormData
+                });
             }
-        } else {
-            // Caso contrário, é um novo livro, faça uma requisição POST
-            const response = await fetch('http://localhost:5000/api/books', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(updatedBookData),
-            });
 
             if (response.ok) {
-                // Sucesso ao adicionar um novo livro
                 const newBook = await response.json();
-                onSubmit(newBook);
-                onClose(); // Fechar o modal após adicionar o livro
-            } else {
-                console.error('Erro ao adicionar o livro');
-            }
+            // Ao adicionar ou editar o livro, agora 'newBook.coverImage' contém a URL completa
+            onSubmit({
+                ...newBook,
+                image: `http://localhost:5000${newBook.coverImage}`,  // Garante que a URL completa é passada
+            });
+            onClose();  // Fecha o modal
+        } else {
+            console.error('Erro ao enviar o livro');
+        }
+    } catch (error) {
+        console.error('Erro ao enviar o livro:', error);
         }
     };
 
     const getImageSrc = () => {
         if (bookData.image instanceof File) {
-            return URL.createObjectURL(bookData.image); // Usado quando a imagem é um arquivo
+            return URL.createObjectURL(bookData.image);
         }
         return bookData.image; // Caso contrário, é uma URL
     };
@@ -169,7 +153,7 @@ const BookModal: React.FC<BookModalProps> = ({ showForm, editingBook, onClose, o
                             <div className="text-center">
                                 {bookData.image && (
                                     <Image
-                                        src={getImageSrc()}
+                                    src={`http://localhost:5000/uploads/${bookData.image}`}
                                         alt="Foto do livro"
                                         className="mx-auto w-28 h-40 object-cover mb-4"
                                         width={100}  // Defina a largura desejada

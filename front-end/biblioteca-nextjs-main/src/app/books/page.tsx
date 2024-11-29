@@ -38,10 +38,10 @@ const AdminPage = () => {
   // Função para filtrar os livros com base na pesquisa
   const filteredBooks = books
     ? books.filter(
-        (book) =>
-          book.title.toLowerCase().includes(query.toLowerCase()) ||
-          book.author.toLowerCase().includes(query.toLowerCase())
-      )
+      (book) =>
+        book.title.toLowerCase().includes(query.toLowerCase()) ||
+        book.author.toLowerCase().includes(query.toLowerCase())
+    )
     : [];
 
   // Função para lidar com a mudança no campo de pesquisa
@@ -76,8 +76,10 @@ const AdminPage = () => {
     formData.append("year", bookData.year.toString());
 
     if (imageSrc) {
-      const file = imageSrc as File;  // Agora imageSrc será um arquivo real (não base64)
-      formData.append("coverImage", file);
+      const inputFile = document.querySelector('input[type="file"]') as HTMLInputElement;
+      if (inputFile && inputFile.files?.[0]) {
+        formData.append("coverImage", inputFile.files[0]); // Adiciona o arquivo real
+      }
     }
 
     try {
@@ -98,6 +100,7 @@ const AdminPage = () => {
 
       if (response.ok) {
         const newBook = await response.json();
+        console.log('Livro salvo:', newBook);
         setBooks((prevBooks) => {
           if (editingBook) {
             return prevBooks.map((book) =>
@@ -109,6 +112,8 @@ const AdminPage = () => {
         });
         setShowForm(false);  // Fecha o modal
       } else {
+        const errorText = await response.text(); // Captura o texto do erro
+        console.error('Erro no backend:', errorText); // Loga o erro
         alert("Erro ao salvar o livro!");
       }
     } catch (error) {
@@ -125,7 +130,7 @@ const AdminPage = () => {
         {
           method: "DELETE",
           headers: {
-            "Content-Type": "application/json",
+            "Content-Type": "multipart/form-data",
           },
         }
       );

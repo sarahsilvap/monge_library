@@ -4,7 +4,7 @@ const axios = require('axios');
 const apiClient = axios.create({
     baseURL: 'http://localhost:3000/api/books', 
     headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'multipart/form-data',
     },
 });
 

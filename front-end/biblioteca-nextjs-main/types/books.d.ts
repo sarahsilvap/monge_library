@@ -4,5 +4,5 @@ interface Books {
     title: string,
     author: string,
     year: number,
-    coverImage?: string;
+    image?: string;
 }

@@ -1,5 +1,3 @@
-// arquivo principal da API
-// inicia o servidor
 
 require('dotenv').config(); // Carrega as variáveis do arquivo .env
 const express = require('express');
@@ -18,7 +16,7 @@ app.use('/uploads', express.static('uploads'));  // Serve as imagens da pasta 'u
 // Configuração do multer para salvar as imagens na pasta 'uploads'
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');  // Define o diretório de destino para as imagens
+    cb(null, './uploads');  // Define o diretório de destino para as imagens
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);  // Gera um sufixo único
@@ -43,6 +41,8 @@ const authRoutes = require('./routes/authRoutes');  // Roteador para as rotas de
 // Usando as rotas na aplicação
 app.use('/api/books', bookRoutes);  // Rota para manipulação dos livros
 app.use('/api/auth', authRoutes);  // Rota para autenticação
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
 
 // Define a porta do servidor
 app.listen(5000, () => {
