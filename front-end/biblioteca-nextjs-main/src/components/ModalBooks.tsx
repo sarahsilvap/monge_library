@@ -104,7 +104,7 @@ const BookModal: React.FC<BookModalProps> = ({ showForm, editingBook, onClose, o
         if (bookData.image instanceof File) {
             return URL.createObjectURL(bookData.image);
         }
-        return bookData.image; // Caso contrário, é uma URL
+        return `http://localhost:5000${bookData.image}`; 
     };
 
     if (!showForm) return null;

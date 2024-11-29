@@ -206,12 +206,11 @@ const AdminPage = () => {
                       <td className="border-b p-2 text-center">
                         <div className="relative w-28 h-40 mx-auto">
                           {book.coverImage && (
-                            <Image
-                              src={book.coverImage} // A URL da imagem ou a base64 vinda do banco de dados
-                              alt="Book cover"
-                              width={112} // Ajuste do tamanho da imagem
-                              height={160} // Ajuste do tamanho da imagem
-                            />
+                            <img
+                            src={`http://localhost:5000${book.coverImage}`} // Certifique-se de concatenar a URL corretamente
+                            alt="Foto do livro"
+                            className="mx-auto w-28 h-40 object-cover mb-4"
+                          />
                           )}
                         </div>
                       </td>

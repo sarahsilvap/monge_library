@@ -20,12 +20,19 @@ const storage = multer.diskStorage({
 
 // Verifique a configuração de multer para aceitar o campo "coverImage"
 const upload = multer({
-    storage: storage, // Já definimos o storage com o destino do arquivo
+    storage: storage,
     fileFilter: (req, file, cb) => {
-        if (file.fieldname === "coverImage") {
-            return cb(null, true); 
+        const filetypes = /jpeg|jpg|png|gif/; // Adiciona os tipos de imagem aceitos
+        const mimetype = filetypes.test(file.mimetype);
+        const extname = filetypes.test(
+            path.extname(file.originalname).toLowerCase()
+        );
+
+        if (mimetype && extname) {
+            return cb(null, true);
+        } else {
+            cb(new Error("Tipo de arquivo não permitido"), false);
         }
-        cb(new Error("Unexpected field"), false); // Se o campo não for 'coverImage', retorna erro
     },
 });
 

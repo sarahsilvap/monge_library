@@ -11,7 +11,7 @@ const path = require('path');
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use('/uploads', express.static('uploads'));  // Serve as imagens da pasta 'uploads'
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));  // Serve as imagens da pasta 'uploads'
 
 // Configuração do multer para salvar as imagens na pasta 'uploads'
 const storage = multer.diskStorage({
