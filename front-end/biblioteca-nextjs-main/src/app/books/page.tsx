@@ -4,29 +4,26 @@ import React, { useState, useEffect } from "react";
 import { BiSolidBookAdd } from "react-icons/bi";
 import HeaderAdm from "@/components/HeaderAdm";
 import BookModal from "@/components/ModalBooks";
+import { Spinner } from "@nextui-org/react";
 
 const AdminPage = () => {
   const [query, setQuery] = useState(""); // Estado para armazenar a pesquisa
   const [showForm, setShowForm] = useState(false); // Controla a visibilidade do modal
   const [editingBook, setEditingBook] = useState<Books | null>(null); // Livro a ser editado
   const [books, setBooks] = useState<Books[] | null>(null);
-  const [imageSrc, setImageSrc] = useState<string | null>(null); // Armazenar base64 da imagem
-
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const objectURL = URL.createObjectURL(file); // Create a temporary URL for the file
-      setImageSrc(objectURL);
-    }
-  };
+  const [loading, setLoading] = useState(true);
 
   const fetchBooks = async () => {
     try {
+      setLoading(true);
+
       const response = await fetch("http://localhost:5000/api/books"); // URL do seu backend
       const data = await response.json();
       setBooks(data); // Atualiza o estado com os livros do backend
     } catch (error) {
       console.error("Erro ao carregar os livros:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -66,21 +63,11 @@ const AdminPage = () => {
     setEditingBook(null);
   };
 
+
   // Função para salvar ou atualizar um livro
-  const handleSubmit = async (bookData: Books) => {
-    console.log("Livro salvo:", bookData);
-    setBooks((prevBooks) => {
-      if (prevBooks && bookData) {
-        if (editingBook) {
-          return prevBooks.map((book) =>
-            book._id === bookData._id ? bookData : book
-          );
-        } else {
-          return [...prevBooks, bookData]; // Apenas adiciona o novo livro
-        }
-      }
-    });
-    
+  const handleSubmit = async () => {
+    await fetchBooks();
+
     setShowForm(false); // Fecha o modal
   };
 
@@ -119,6 +106,7 @@ const AdminPage = () => {
               <div className="flex items-center gap-4">
                 {/* Título e Botão de Adicionar Livro */}
                 <h1 className="text-3xl">Gerenciar Livros</h1>
+                {loading && (<Spinner />)}
                 <button onClick={handleAddBookClick}>
                   <BiSolidBookAdd color="#3B82F6" size={30} />
                 </button>
@@ -167,7 +155,7 @@ const AdminPage = () => {
                     <tr key={book._id}>
                       <td className="border-b p-2 text-center">
                         <div className="relative w-28 h-40 mx-auto">
-                          {book.coverImage && (
+                          {typeof book.coverImage === 'string' && (
                             // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={`http://localhost:5000${book.coverImage}`} // Certifique-se de concatenar a URL corretamente

@@ -3,7 +3,12 @@ import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const Carousel = () => {
+interface CarouselProps {
+  books: Books[] | null;
+}
+
+const Carousel = ({ books }: CarouselProps) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sliderRef = useRef<any>(null);
   const intervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const [isClient, setIsClient] = useState(false);  // Estado para controlar a renderização no cliente
@@ -21,21 +26,49 @@ const Carousel = () => {
     slidesToScroll: 1,
     responsive: [
       {
-        breakpoint: 1024,
+        breakpoint: 1630,
+        settings: {
+          slidesToShow: 7,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 1460,
+        settings: {
+          slidesToShow: 6,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 1240,
+        settings: {
+          slidesToShow: 5,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 1070,
+        settings: {
+          slidesToShow: 4,
+          slidesToScroll: 1,
+        },
+      },
+      {
+        breakpoint: 890,
         settings: {
           slidesToShow: 3,
           slidesToScroll: 1,
         },
       },
       {
-        breakpoint: 600,
+        breakpoint: 720,
         settings: {
           slidesToShow: 2,
           slidesToScroll: 1,
         },
       },
       {
-        breakpoint: 480,
+        breakpoint: 520,
         settings: {
           slidesToShow: 1,
           slidesToScroll: 1,
@@ -92,14 +125,14 @@ const Carousel = () => {
       />
 
       <Slider ref={sliderRef} {...settings}>
-        {Array.from({ length: 10 }).map((_, index) => (
-          <div className="p-5 mt-6" key={index}>
+        {books?.map((book) => (
+          <div className="p-5 mt-6" key={book.id}>
             <div
               className="bg-white rounded-md shadow-md text-center flex flex-col justify-center items-center"
               style={{ width: "180px", height: "250px" }}
             >
-              <h2 className="text-lg font-semibold">Categoria {index + 1}</h2>
-              <p className="text-sm mt-2">Descrição da categoria.</p>
+              <h2 className="text-lg font-semibold">{book.title}</h2>
+              <p className="text-sm mt-2">{book.author}</p>
             </div>
           </div>
         ))}

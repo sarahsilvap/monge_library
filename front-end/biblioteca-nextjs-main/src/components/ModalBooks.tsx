@@ -3,7 +3,7 @@ import Image from "next/image";
 
 interface BookModalProps {
   showForm: boolean;
-  editingBook?: Books;
+  editingBook: Books | null;
   onClose: () => void;
     onSubmit: (book: Books) => void;
 }
