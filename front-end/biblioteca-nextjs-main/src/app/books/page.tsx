@@ -20,27 +20,27 @@ const AdminPage = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchBooks = async () => {
-      try {
-        const response = await fetch("http://localhost:5000/api/books"); // URL do seu backend
-        const data = await response.json();
-        setBooks(data); // Atualiza o estado com os livros do backend
-      } catch (error) {
-        console.error("Erro ao carregar os livros:", error);
-      }
-    };
+  const fetchBooks = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/books"); // URL do seu backend
+      const data = await response.json();
+      setBooks(data); // Atualiza o estado com os livros do backend
+    } catch (error) {
+      console.error("Erro ao carregar os livros:", error);
+    }
+  };
 
+  useEffect(() => {
     fetchBooks();
   }, []);
 
-  // Função para filtrar os livros 
+  // Função para filtrar os livros
   const filteredBooks = books
     ? books.filter(
-      (book) =>
-        book.title.toLowerCase().includes(query.toLowerCase()) ||
-        book.author.toLowerCase().includes(query.toLowerCase())
-    )
+        (book) =>
+          book.title.toLowerCase().includes(query.toLowerCase()) ||
+          book.author.toLowerCase().includes(query.toLowerCase())
+      )
     : [];
 
   // Função busca
@@ -68,57 +68,20 @@ const AdminPage = () => {
 
   // Função para salvar ou atualizar um livro
   const handleSubmit = async (bookData: Books) => {
-    const formData = new FormData();
-
-    formData.append("title", bookData.title);
-    formData.append("author", bookData.author);
-    formData.append("year", bookData.year.toString());
-
-    if (imageSrc) {
-      const inputFile = document.querySelector('input[type="file"]') as HTMLInputElement;
-      if (inputFile && inputFile.files?.[0]) {
-        formData.append("coverImage", inputFile.files[0]); // Adiciona o arquivo real
+    console.log("Livro salvo:", bookData);
+    setBooks((prevBooks) => {
+      if (prevBooks && bookData) {
+        if (editingBook) {
+          return prevBooks.map((book) =>
+            book._id === bookData._id ? bookData : book
+          );
+        } else {
+          return [...prevBooks, bookData]; // Apenas adiciona o novo livro
+        }
       }
-    }
-
-    try {
-      let response;
-      if (editingBook) {
-        // Atualiza livro existente (PUT request)
-        response = await fetch(`http://localhost:5000/api/books/${editingBook._id}`, {
-          method: "PUT",
-          body: formData,  // Passa o FormData diretamente para o corpo da requisição
-        });
-      } else {
-        // Adiciona um novo livro (POST request)
-        response = await fetch("http://localhost:5000/api/books", {
-          method: "POST",
-          body: formData,  // Passa o FormData diretamente para o corpo da requisição
-        });
-      }
-
-      if (response.ok) {
-        const newBook = await response.json();
-        console.log('Livro salvo:', newBook);
-        setBooks((prevBooks) => {
-          if (editingBook) {
-            return prevBooks.map((book) =>
-              book._id === newBook._id ? newBook : book
-            );
-          } else {
-            return [...prevBooks, newBook]; // Apenas adiciona o novo livro
-          }
-        });
-        setShowForm(false);  // Fecha o modal
-      } else {
-        const errorText = await response.text(); // Captura o texto do erro
-        console.error('Erro no backend:', errorText); // Loga o erro
-        alert("Erro ao salvar o livro!");
-      }
-    } catch (error) {
-      console.error("Erro ao enviar a requisição:", error);
-      alert("Erro ao enviar o livro.");
-    }
+    });
+    
+    setShowForm(false); // Fecha o modal
   };
 
   // Função para excluir um livro
@@ -205,6 +168,7 @@ const AdminPage = () => {
                       <td className="border-b p-2 text-center">
                         <div className="relative w-28 h-40 mx-auto">
                           {book.coverImage && (
+                            // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={`http://localhost:5000${book.coverImage}`} // Certifique-se de concatenar a URL corretamente
                               alt="Foto do livro"

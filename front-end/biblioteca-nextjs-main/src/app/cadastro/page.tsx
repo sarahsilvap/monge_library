@@ -34,6 +34,7 @@ const Cadastro = () => {
             {/* Imagem de fundo */}
             <div className="relative w-full h-full">
                 <Image
+                
                     src="/image/livro-login.jpg"
                     alt="Imagem de Livros"
                     layout="fill"
