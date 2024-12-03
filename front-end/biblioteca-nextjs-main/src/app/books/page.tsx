@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 "use client"; // Este é um componente de cliente (React Client Component)
 
 import React, { useState, useEffect } from "react";
@@ -156,11 +157,10 @@ const AdminPage = () => {
                       <td className="border-b p-2 text-center">
                         <div className="relative w-28 h-40 mx-auto">
                           {typeof book.coverImage === 'string' && (
-                            // eslint-disable-next-line @next/next/no-img-element
                             <img
                               src={`http://localhost:5000${book.coverImage}`} // Certifique-se de concatenar a URL corretamente
                               alt="Foto do livro"
-                              className="mx-auto w-28 h-40 object-cover mb-4"
+                              className="mx-auto w-28 h-40 object-cover mb-4 rounded"
                             />
                           )}
                         </div>

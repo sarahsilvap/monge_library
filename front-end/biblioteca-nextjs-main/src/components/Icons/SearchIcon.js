@@ -1,11 +1,8 @@
 export const SearchIcon = ({
   fill = "currentColor",
-  filled,
   size,
   height,
   width,
-  label,
-  ...props
 }) => {
   return (
     <svg
