@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
-import Image from "next/image";
+import React, { useState, useEffect } from 'react';
+import Image from 'next/image';
+import Select from 'react-select';
 
 interface BookModalProps {
   showForm: boolean;
   editingBook: Books | null;
   onClose: () => void;
-    onSubmit: (book: Books) => void;
+  onSubmit: (book: Books) => void;
 }
 
 const BookModal: React.FC<BookModalProps> = ({
@@ -15,36 +16,67 @@ const BookModal: React.FC<BookModalProps> = ({
   onSubmit,
 }) => {
   const [bookData, setBookData] = useState<Books>({
-    _id: "",
-    title: "",
-    author: "",
-    year: 0,
-    coverImage: "",
+    _id: '',
+    id:'',
+    title: '',
+    author: '',
+    synopsis: '',
+    category: '',
+    year: '',
+    coverImage: '',
   });
 
   useEffect(() => {
     if (editingBook) {
       setBookData({
         _id: editingBook._id,
+        id: editingBook.id,
         title: editingBook.title,
         author: editingBook.author,
+        synopsis: editingBook.synopsis,
+        category: editingBook.category,
         year: editingBook.year,
         coverImage: editingBook.coverImage,
       });
     } else {
       setBookData({
-        _id: "",
-        title: "",
-        author: "",
-        year: 0,
-        coverImage: "",
+        _id: '',
+        id:'',
+        title: '',
+        author: '',
+        synopsis: '',
+        category: '',
+        year: '',
+        coverImage: '',
       });
     }
   }, [editingBook]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setBookData({ ...bookData, [name]: value });
+  };
+
+  const options = [
+    { value: 'romance', label: 'Romance' },
+    { value: 'Fantasy', label: 'Fantasia' },
+    { value: 'Horror', label: 'Terror' },
+    { value: 'Adventure', label: 'Aventura' },
+    { value: 'SciendFiction', label: 'Ficção científica' },
+  ];
+
+  const [selectedOption, setSelectedValue] = useState<{
+    value: string;
+    label: string;
+  } | null>(null);
+
+  const handleSelected = (
+    selected: { value: string; label: string } | null
+  ) => {
+    setSelectedValue(selected); // Armazena o objeto completo no estado
+    if (selected) {
+      setBookData({ ...bookData, category: selected.value }); // Atualiza a categoria do livro
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,12 +90,13 @@ const BookModal: React.FC<BookModalProps> = ({
     e.preventDefault();
 
     const formData = new FormData();
-    formData.append("title", bookData.title);
-    formData.append("author", bookData.author);
-    formData.append("year", bookData.year.toString());
+    formData.append('title', bookData.title);
+    formData.append('author', bookData.author);
+    formData.append('year', bookData.year.toString());
+    formData.append('category', bookData.category);
 
     if (bookData.coverImage instanceof File) {
-      formData.append("coverImage", bookData.coverImage);
+      formData.append('coverImage', bookData.coverImage);
     }
 
     try {
@@ -72,13 +105,13 @@ const BookModal: React.FC<BookModalProps> = ({
         response = await fetch(
           `http://localhost:5000/api/books/${editingBook._id}`,
           {
-            method: "PUT",
+            method: 'PUT',
             body: formData,
           }
         );
       } else {
-        response = await fetch("http://localhost:5000/api/books", {
-          method: "POST",
+        response = await fetch('http://localhost:5000/api/books', {
+          method: 'POST',
           body: formData,
         });
       }
@@ -91,10 +124,10 @@ const BookModal: React.FC<BookModalProps> = ({
         });
         onClose();
       } else {
-        console.error("Erro ao enviar o livro");
+        console.error('Erro ao enviar o livro');
       }
     } catch (error) {
-      console.error("Erro ao enviar o livro:", error);
+      console.error('Erro ao enviar o livro:', error);
     }
   };
 
@@ -109,10 +142,10 @@ const BookModal: React.FC<BookModalProps> = ({
 
   return (
     <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-500 bg-opacity-50">
-      <div className="bg-white rounded-lg shadow-lg w-96 p-6">
+      <div className="bg-white rounded-lg shadow-lg w-96 p-6 max-h-[80vh] overflow-y-auto">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-semibold">
-            {editingBook ? "Editar Livro" : "Adicionar Livro"}
+            {editingBook ? 'Editar Livro' : 'Adicionar Livro'}
           </h2>
           <button
             className="text-gray-500 hover:text-gray-700"
@@ -123,6 +156,7 @@ const BookModal: React.FC<BookModalProps> = ({
         </div>
 
         <form className="mt-4" onSubmit={handleFormSubmit}>
+          <p>Título:</p>
           <input
             type="text"
             name="title"
@@ -132,6 +166,7 @@ const BookModal: React.FC<BookModalProps> = ({
             className="w-full p-2 border border-gray-300 rounded-md mt-2"
             required
           />
+          <p className="mt-2">Autor:</p>
           <input
             type="text"
             name="author"
@@ -141,8 +176,9 @@ const BookModal: React.FC<BookModalProps> = ({
             className="w-full p-2 border border-gray-300 rounded-md mt-2"
             required
           />
+          <p className="mt-2">Ano:</p>
           <input
-            type="number"
+            type="text"
             name="year"
             placeholder="Ano"
             value={bookData.year}
@@ -150,25 +186,48 @@ const BookModal: React.FC<BookModalProps> = ({
             className="w-full p-2 border border-gray-300 rounded-md mt-2"
             required
           />
+          <div className="pt-2">
+            <label htmlFor="category">Categoria:</label>
+            <Select
+              className="pt-2"
+              id="dropdown"
+              options={options}
+              value={selectedOption}
+              onChange={handleSelected}
+              placeholder="Selecione uma opção"
+            ></Select>
+          </div>
+          <div className="h-32">
+            <p className="mt-2">Sinopse:</p>
+            <textarea
+              name="synopsis"
+              placeholder=""
+              value={bookData.synopsis}
+              onChange={handleChange}
+              className="w-full h-[80%] p-2 border border-gray-300 rounded-md mt-2 resize-y overflow-auto"
+              rows={4}// Define a altura inicial (4 linhas)
+              style={{ wordWrap: 'break-word' }}
+              required
+            />
+          </div>
           <div className="col-span-full mt-4">
-            <label
-              htmlFor="cover-photo"
-              className="block text-sm font-medium text-gray-900"
-            >
-              Adicionar foto
+            <label htmlFor="cover-photo" className="block font-medium">
+              Adicionar capa
             </label>
-            <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10">
+            <div className="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-4 pt-0">
               <div className="text-center">
                 {bookData.coverImage && (
-                  <Image
-                    src={getImageSrc()}
-                    alt="Foto do livro"
-                    className="mx-auto w-28 h-40 object-cover mb-4"
-                    width={100}
-                    height={150}
-                  />
+                  <div className="pt-4">
+                    <Image
+                      src={getImageSrc()}
+                      alt="Foto do livro"
+                      className="mx-auto w-28 h-30 object-cover mb-4"
+                      width={100}
+                      height={150}
+                    />
+                  </div>
                 )}
-                <div className="mt-4 flex text-sm text-gray-600">
+                <div className="mt-4 flex text-sm text-gray-600 justify-center">
                   <label
                     htmlFor="file-upload"
                     className="relative cursor-pointer rounded-md bg-white font-semibold text-indigo-600 hover:text-indigo-500"
@@ -182,9 +241,10 @@ const BookModal: React.FC<BookModalProps> = ({
                       onChange={handleImageChange}
                     />
                   </label>
-                  <p className="pl-1">ou arraste e solte</p>
                 </div>
-                <p className="text-xs text-gray-600">PNG, JPG, GIF até 10MB</p>
+                <p className="text-xs text-gray-600">
+                  Arquivos PNG e JPG até 10MB
+                </p>
               </div>
             </div>
           </div>
@@ -193,7 +253,7 @@ const BookModal: React.FC<BookModalProps> = ({
             type="submit"
             className="w-full bg-blue-500 text-white p-2 rounded-md mt-4 hover:bg-blue-600"
           >
-            {editingBook ? "Salvar alterações" : "Adicionar"}
+            {editingBook ? 'Salvar alterações' : 'Adicionar'}
           </button>
         </form>
       </div>

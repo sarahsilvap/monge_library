@@ -1,9 +1,11 @@
 interface Books {
-    coverImage: React.JSX.Element;
+    coverImage: string;
     _id?: string,
     id: string,
     title: string,
     author: string,
-    year: number,
+    synopsis: string,
+    category: string,
+    year: string,
     image?: string;
 }

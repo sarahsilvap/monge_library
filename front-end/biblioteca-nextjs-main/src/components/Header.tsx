@@ -38,10 +38,8 @@ const Header = () => {
               <SearchIcon
                 fill="grey"
                 size={20}
-                filled={false}
                 height={20}
                 width={20}
-                label="Ícone de Pesquisa"
               />
             </button>
           </div>
