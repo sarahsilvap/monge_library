@@ -17,7 +17,7 @@ const BookModal: React.FC<BookModalProps> = ({
 }) => {
   const [bookData, setBookData] = useState<Books>({
     _id: '',
-    id:'',
+    id:'',  
     title: '',
     author: '',
     synopsis: '',

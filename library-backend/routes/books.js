@@ -42,7 +42,7 @@ router.post("/", upload.single("coverImage"), async (req, res) => {
     console.log("Dados recebidos no backend:", req.body); // Mostra os dados do livro
     console.log("Arquivo recebido:", req.file); // Mostra o arquivo de imagem (se houver)
 
-    const { title, author, year } = req.body; // Extrai os dados do corpo da requisição
+    const { title, author, year, synopsis, category  } = req.body; // Extrai os dados do corpo da requisição
     const coverImage = req.file ? `/uploads/${req.file.filename}` : null; // Define o caminho da imagem
 
     try {
@@ -70,7 +70,7 @@ router.get("/", async (req, res) => {
 
 // **** ATUALIZAÇÃO (PUT) ****
 router.put("/:id", upload.single("coverImage"), async (req, res) => {
-    const { title, author, year } = req.body;
+    const { title, author, year, synopsis, category } = req.body;
 
     let coverImage = req.body.coverImage || null; // Mantém a imagem atual caso não seja enviada uma nova
 
@@ -82,7 +82,7 @@ router.put("/:id", upload.single("coverImage"), async (req, res) => {
     try {
         const updatedBook = await Book.findByIdAndUpdate(
             req.params.id,
-            { title, author, year, coverImage },
+            { title, author, year, synopsis, category, coverImage },
             { new: true } // Retorna o livro atualizado
         );
 
