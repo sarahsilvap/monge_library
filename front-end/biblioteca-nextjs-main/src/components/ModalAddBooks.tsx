@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Select from 'react-select';
@@ -9,7 +10,7 @@ interface BookModalProps {
   onSubmit: (book: Books) => void;
 }
 
-const BookModal: React.FC<BookModalProps> = ({
+const BookAddModal: React.FC<BookModalProps> = ({
   showForm,
   editingBook,
   onClose,
@@ -17,7 +18,7 @@ const BookModal: React.FC<BookModalProps> = ({
 }) => {
   const [bookData, setBookData] = useState<Books>({
     _id: '',
-    id:'',  
+    id: '',
     title: '',
     author: '',
     synopsis: '',
@@ -38,10 +39,16 @@ const BookModal: React.FC<BookModalProps> = ({
         year: editingBook.year,
         coverImage: editingBook.coverImage,
       });
-    } else {
+      setSelectedValue({
+        value: editingBook.category,
+        label:
+          options.find((option) => option.value === editingBook.category)
+            ?.label || '',
+      });
+    } else if (showForm) {
       setBookData({
         _id: '',
-        id:'',
+        id: '',
         title: '',
         author: '',
         synopsis: '',
@@ -49,20 +56,23 @@ const BookModal: React.FC<BookModalProps> = ({
         year: '',
         coverImage: '',
       });
+      setSelectedValue(null);
     }
-  }, [editingBook]);
+  }, [editingBook, showForm]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setBookData({ ...bookData, [name]: value });
   };
 
   const options = [
-    { value: 'romance', label: 'Romance' },
-    { value: 'Fantasy', label: 'Fantasia' },
-    { value: 'Horror', label: 'Terror' },
-    { value: 'Adventure', label: 'Aventura' },
-    { value: 'SciendFiction', label: 'Ficção científica' },
+    { value: 'Romance', label: 'Romance' },
+    { value: 'Fantasia', label: 'Fantasia' },
+    { value: 'Terrir', label: 'Terror' },
+    { value: 'Aventura', label: 'Aventura' },
+    { value: 'Ficção científica', label: 'Ficção científica' },
   ];
 
   const [selectedOption, setSelectedValue] = useState<{
@@ -94,9 +104,12 @@ const BookModal: React.FC<BookModalProps> = ({
     formData.append('author', bookData.author);
     formData.append('year', bookData.year.toString());
     formData.append('category', bookData.category);
+    formData.append('synopsis', bookData.synopsis);
 
     if (bookData.coverImage instanceof File) {
       formData.append('coverImage', bookData.coverImage);
+    } else if (editingBook?.coverImage) {
+      formData.append('coverImage', editingBook.coverImage);
     }
 
     try {
@@ -134,8 +147,10 @@ const BookModal: React.FC<BookModalProps> = ({
   const getImageSrc = () => {
     if (bookData.coverImage instanceof File) {
       return URL.createObjectURL(bookData.coverImage);
+    } else if (bookData.coverImage) {
+      return `http://localhost:5000${bookData.coverImage}`;
     }
-    return `http://localhost:5000${bookData.coverImage}`;
+    return '';
   };
 
   if (!showForm) return null;
@@ -205,7 +220,7 @@ const BookModal: React.FC<BookModalProps> = ({
               value={bookData.synopsis}
               onChange={handleChange}
               className="w-full h-[80%] p-2 border border-gray-300 rounded-md mt-2 resize-y overflow-auto"
-              rows={4}// Define a altura inicial (4 linhas)
+              rows={4} // Define a altura inicial (4 linhas)
               style={{ wordWrap: 'break-word' }}
               required
             />
@@ -261,4 +276,4 @@ const BookModal: React.FC<BookModalProps> = ({
   );
 };
 
-export default BookModal;
+export default BookAddModal;

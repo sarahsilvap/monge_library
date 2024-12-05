@@ -1,14 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
-"use client"; // Este é um componente de cliente (React Client Component)
+'use client'; // Este é um componente de cliente (React Client Component)
 
-import React, { useState, useEffect } from "react";
-import { BiSolidBookAdd } from "react-icons/bi";
-import HeaderAdm from "@/components/HeaderAdm";
-import BookModal from "@/components/ModalBooks";
-import { Spinner } from "@nextui-org/react";
+import React, { useState, useEffect } from 'react';
+import { BiSolidBookAdd } from 'react-icons/bi';
+import HeaderAdm from '@/components/HeaderAdm';
+import BookModal from '@/components/ModalAddBooks';
+import { Spinner } from '@nextui-org/react';
 
 const AdminPage = () => {
-  const [query, setQuery] = useState(""); // Estado para armazenar a pesquisa
+  const [query, setQuery] = useState(''); // Estado para armazenar a pesquisa
   const [showForm, setShowForm] = useState(false); // Controla a visibilidade do modal
   const [editingBook, setEditingBook] = useState<Books | null>(null); // Livro a ser editado
   const [books, setBooks] = useState<Books[] | null>(null);
@@ -18,11 +18,11 @@ const AdminPage = () => {
     try {
       setLoading(true);
 
-      const response = await fetch("http://localhost:5000/api/books"); // URL do seu backend
+      const response = await fetch('http://localhost:5000/api/books'); // URL do seu backend
       const data = await response.json();
       setBooks(data); // Atualiza o estado com os livros do backend
     } catch (error) {
-      console.error("Erro ao carregar os livros:", error);
+      console.error('Erro ao carregar os livros:', error);
     } finally {
       setLoading(false);
     }
@@ -60,10 +60,9 @@ const AdminPage = () => {
 
   // Função para fechar o modal
   const handleCloseModal = () => {
-    setShowForm(false);
     setEditingBook(null);
+    setShowForm(false);
   };
-
 
   // Função para salvar ou atualizar um livro
   const handleSubmit = async () => {
@@ -78,22 +77,22 @@ const AdminPage = () => {
       const response = await fetch(
         `http://localhost:5000/api/books/${bookId}`,
         {
-          method: "DELETE",
+          method: 'DELETE',
           headers: {
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
           },
         }
       );
 
       if (response.ok) {
         setBooks((books ?? []).filter((book) => book._id !== bookId));
-        alert("Livro excluído com sucesso!");
+        alert('Livro excluído com sucesso!');
       } else {
-        alert("Erro ao excluir o livro!");
+        alert('Erro ao excluir o livro!');
       }
     } catch (error) {
-      console.error("Erro ao enviar a requisição de exclusão", error);
-      alert("Erro na requisição.");
+      console.error('Erro ao enviar a requisição de exclusão', error);
+      alert('Erro na requisição.');
     }
   };
 
@@ -107,7 +106,7 @@ const AdminPage = () => {
               <div className="flex items-center gap-4">
                 {/* Título e Botão de Adicionar Livro */}
                 <h1 className="text-3xl">Gerenciar Livros</h1>
-                {loading && (<Spinner />)}
+                {loading && <Spinner />}
                 <button onClick={handleAddBookClick}>
                   <BiSolidBookAdd color="#3B82F6" size={30} />
                 </button>
@@ -144,6 +143,9 @@ const AdminPage = () => {
                   <th className="p-3 border-b rounded-md min-w-[300px]">
                     Autor
                   </th>
+                  <th className="p-3 border-b rounded-md min-w-[300px]">
+                    Categoria
+                  </th>
                   <th className="p-3 border-b rounded-md min-w-[150px]">Ano</th>
                   <th className="p-3 border-b rounded-md min-w-[150px]">
                     Ações
@@ -169,6 +171,9 @@ const AdminPage = () => {
                       <td className="border-b p-2 text-center">
                         {book.author}
                       </td>
+                      <td className="border-b p-2 text-center">
+                        {book.category}
+                      </td>
                       <td className="border-b p-2 text-center">{book.year}</td>
                       <td className="border-b p-2 text-center">
                         {/* Botões de Ação */}
@@ -180,7 +185,7 @@ const AdminPage = () => {
                         </button>
                         <button
                           className="bg-red-500 text-white py-1 px-4 ml-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2"
-                          onClick={() => handleDeleteBook(book._id ?? "")}
+                          onClick={() => handleDeleteBook(book._id ?? '')}
                         >
                           Excluir
                         </button>
