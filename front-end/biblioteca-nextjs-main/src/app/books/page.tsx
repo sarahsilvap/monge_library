@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import { BiSolidBookAdd } from 'react-icons/bi';
 import HeaderAdm from '@/components/HeaderAdm';
-import BookModal from '@/components/ModalAddBooks';
+import BookAddModal from '@/components/ModalAddBooks';
 import { Spinner } from '@nextui-org/react';
 
 const AdminPage = () => {
@@ -123,7 +123,7 @@ const AdminPage = () => {
             </div>
 
             {/* Exibe o modal de adicionar/editar livro */}
-            <BookModal
+            <BookAddModal
               showForm={showForm}
               editingBook={editingBook}
               onClose={handleCloseModal}

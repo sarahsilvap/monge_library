@@ -3,17 +3,31 @@ import { useRef, useState, useEffect } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
-
-interface CarouselProps {
-  books: Books[] | null;
-}
+import { Button } from '@nextui-org/react';
+import BookShowModal from './ModalShowBook';
 
 const Carousel = ({ books }: CarouselProps) => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const sliderRef = useRef<any>(null);
   const intervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
-  const [isClient, setIsClient] = useState(false); // Estado para controlar a renderização no cliente
+  const [isClient, setIsClient] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false); // Controle do modal
+  const [selectedBook, setSelectedBook] = useState(null); // Livro selecionado
 
+  const openModal = (book) => {
+    setSelectedBook(book); // Define o livro atual
+    setIsModalOpen(true); // Abre o modal
+  };
+
+  const closeModal = () => {
+    setSelectedBook(null); // Limpa o livro selecionado
+    setIsModalOpen(false); // Fecha o modal
+  };
+
+  const handleRentBook = (book) => {
+    console.log(`Alugando o livro: ${book.title}`);
+    // Aqui você pode implementar a lógica de aluguel, como chamar um endpoint da API
+  };
+  
   useEffect(() => {
     // Marca como client-side após a primeira renderização
     setIsClient(true);
@@ -128,7 +142,7 @@ const Carousel = ({ books }: CarouselProps) => {
       <Slider ref={sliderRef} {...settings}>
         {books?.map((book) => (
           <div className="p-5 mt-6" key={book.id}>
-            <div
+            <Button onClick={() => openModal(book)}
               className="bg-white rounded-md shadow-md text-center flex flex-col justify-center items-center"
               style={{
                 width: '180px',
@@ -137,13 +151,20 @@ const Carousel = ({ books }: CarouselProps) => {
                 backgroundSize: 'cover',
                 backgroundPosition: 'center',
               }}
-            ></div>
+            ></Button>
             <div className='flex flex-col items-center justify-center pt-2'>
               <h2 className="text-base font-semibold text-center w-full break-words">{book.title}</h2>
             </div>
           </div>
         ))}
       </Slider>
+
+      <BookShowModal
+        showBook={isModalOpen}
+        bookData={selectedBook}
+        onClose={closeModal}
+        onRent={() => handleRentBook(selectedBook)}
+      />
     </div>
   );
 };
