@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(
       null,
-      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
+      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname),
     ); // Gera um nome único para o arquivo
   },
 });
@@ -25,7 +25,7 @@ const upload = multer({
     const filetypes = /jpeg|jpg|png|gif/; // Adiciona os tipos de imagem aceitos
     const mimetype = filetypes.test(file.mimetype);
     const extname = filetypes.test(
-      path.extname(file.originalname).toLowerCase()
+      path.extname(file.originalname).toLowerCase(),
     );
 
     if (mimetype && extname) {
@@ -77,22 +77,13 @@ router.get("/", async (req, res) => {
 
 // **** ATUALIZAÇÃO (PUT) ****
 router.put("/:id", upload.single("coverImage"), async (req, res) => {
-  const { title, author, year, synopsis, category, coverImage } =
-    req.body;
+  const { title, author, year, synopsis, category, coverImage } = req.body;
   console.log("Dados recebidos para atualização:", req.body);
   console.log("Arquivo enviado:", req.file);
 
-  // Determinar qual imagem usar
-  let coverImage = null;
-  if (req.file) {
-    coverImage = `/uploads/${req.file.filename}`;
-  } else if (existingCoverImage) {
-    coverImage = existingCoverImage; // Usa a imagem existente
-  }
-
   if (!coverImage) {
     console.log(
-      "Nenhuma imagem foi enviada e não existe uma imagem existente."
+      "Nenhuma imagem foi enviada e não existe uma imagem existente.",
     );
   }
 
@@ -100,7 +91,7 @@ router.put("/:id", upload.single("coverImage"), async (req, res) => {
     const updatedBook = await Book.findByIdAndUpdate(
       req.params.id,
       { title, author, year, synopsis, category, coverImage },
-      { new: true } // Retorna o livro atualizado
+      { new: true }, // Retorna o livro atualizado
     );
 
     if (!updatedBook) {
