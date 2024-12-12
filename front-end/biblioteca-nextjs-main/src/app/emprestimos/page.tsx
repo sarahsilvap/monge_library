@@ -106,10 +106,10 @@ const Emprestimos = () => {
   }
 
   return (
-    <div>
-      <div className="pt-24">
+    <div className="min-h-screen flex flex-col bg-gray-100">
+      <div className="pt-10 mx-auto flex-1">
         <div className="grid grid-cols-8 gap-6">
-          <div className="col-start-1 col-span-8 p-6 mx-auto">
+          <div className="col-start-2 col-span-6 p-6 mx-auto max-w-7xl">
             <div className="flex items-center mb-4 justify-between">
               <div className="flex items-center gap-4">
                 <h1 className="text-3xl">Meus Empréstimos</h1>
@@ -130,16 +130,16 @@ const Emprestimos = () => {
             <table className="w-full table-auto border-collapse justify-items-center justify-center">
               <thead>
                 <tr>
-                  <th className="p-3 border-b rounded-md min-w-[150px]">
+                  <th className="p-3 border-b rounded-md min-w-[200px]">
                     Título
                   </th>
-                  <th className="p-3 border-b rounded-md min-w-[150px]">
+                  <th className="p-3 border-b rounded-md min-w-[200px]">
                     Data de Retirada
                   </th>
-                  <th className="p-3 border-b rounded-md min-w-[150px]">
+                  <th className="p-3 border-b rounded-md min-w-[200px]">
                     Data de Devolução
                   </th>
-                  <th className="p-3 border-b rounded-md min-w-[150px]">
+                  <th className="p-3 border-b rounded-md min-w-[200px]">
                     Ações
                   </th>
                 </tr>
