@@ -29,8 +29,10 @@ const Header = () => {
 
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     const cookieToken = Cookies.get('token');
 
     if (cookieToken) {
@@ -39,7 +41,7 @@ const Header = () => {
       console.log(decoded);
 
       setIsAdmin(
-        decoded?.roles.some((role) => role === 'Administrador') ?? false,
+        decoded?.roles.some((role) => role === 'Administrador') ?? false
       );
     }
   }, []);
@@ -111,7 +113,7 @@ const Header = () => {
       </div>
 
       <div className="my-12 -ml-20">
-        {Cookies.get('token') && isAdmin && (
+        {isClient && Cookies.get('token') && isAdmin && (
           <Dropdown>
             <DropdownTrigger>
               <Button variant="light" aria-label="Clique aqui para perfil">
@@ -128,6 +130,41 @@ const Header = () => {
             </DropdownTrigger>
             <DropdownMenu>
               <DropdownItem
+                onClick={() => {
+                  router.push('/books');
+                }}
+              >
+                Gerenciar Livros
+              </DropdownItem>
+              <DropdownItem
+                onClick={() => {
+                  Cookies.remove('token');
+                  window.location.reload();
+                }}
+              >
+                Sair
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
+        )}
+
+        {isClient && Cookies.get('token') && !isAdmin && (
+          <Dropdown>
+            <DropdownTrigger>
+              <Button variant="light" aria-label="Clique aqui para perfil">
+                <UserIcon
+                  fill="white"
+                  size={24}
+                  filled={false}
+                  height={0}
+                  width={0}
+                  label="Ícone do Usuário"
+                />
+                <p className="text-white mt-0"> Perfil </p>
+              </Button>
+            </DropdownTrigger>
+            <DropdownMenu>
+            <DropdownItem
                 onClick={() => {
                   router.push('/emprestimos');
                 }}
@@ -146,35 +183,7 @@ const Header = () => {
           </Dropdown>
         )}
 
-        {Cookies.get('token') && !isAdmin && (
-          <Dropdown>
-            <DropdownTrigger>
-              <Button variant="light" aria-label="Clique aqui para perfil">
-                <UserIcon
-                  fill="white"
-                  size={24}
-                  filled={false}
-                  height={0}
-                  width={0}
-                  label="Ícone do Usuário"
-                />
-                <p className="text-white mt-0"> Perfil </p>
-              </Button>
-            </DropdownTrigger>
-            <DropdownMenu>
-              <DropdownItem
-                onClick={() => {
-                  Cookies.remove('token');
-                  window.location.reload();
-                }}
-              >
-                Sair
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
-        )}
-
-        {!Cookies.get('token') && (
+        {isClient && !Cookies.get('token') && (
           <Button
             variant="light"
             aria-label="Clique aqui para perfil"

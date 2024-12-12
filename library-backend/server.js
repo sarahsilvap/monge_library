@@ -3,7 +3,6 @@ require('dotenv').config(); // Carrega as variáveis do arquivo .env
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const bodyParser = require('body-parser');
 const multer = require('multer');  // Importa o multer
 const path = require('path');
 
@@ -37,11 +36,13 @@ mongoose.connect('mongodb+srv://sarahspereira17:Sarah170103@library.rrmdm.mongod
 // Importação das rotas
 const bookRoutes = require('./routes/books');  // Roteador para as rotas dos livros
 const authRoutes = require('./routes/authRoutes');  // Roteador para as rotas de autenticação
+const loanRoutes = require('./routes/loans');
 
 // Usando as rotas na aplicação
 app.use('/api/books', bookRoutes);  // Rota para manipulação dos livros
 app.use('/api/auth', authRoutes);  // Rota para autenticação
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use("/api/loans", loanRoutes);
 
 
 // Define a porta do servidor

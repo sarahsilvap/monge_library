@@ -3,8 +3,7 @@
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-const express = require("express");
-const dotenv = require("dotenv");
+const dotenv = require('dotenv');
 dotenv.config();
 
 // Função para registrar novos usuários

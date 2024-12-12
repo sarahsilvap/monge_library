@@ -1,6 +1,7 @@
 interface BookShowProps {
   showBook: boolean;
   bookData: {
+    _id: string;
     title: string;
     author: string;
     synopsis: string;

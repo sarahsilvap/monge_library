@@ -1,14 +1,65 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import Cookies from 'js-cookie';
+import jwt from 'jsonwebtoken';
 
-const BookShowModal: React.FC<BookShowProps> = ({
-  showBook,
-  bookData,
-  onClose,
-  onRent,
-}) => {
-  if (!showBook || !bookData) return null;
+interface BookShowProps {
+  showBook: boolean;
+  bookData: any;
+  onClose: () => void;
+  onRent: () => void;
+}
+
+const BookShowModal: React.FC<BookShowProps> = ({ showBook, bookData, onClose, onRent }) => {
+  const [userId, setUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Recuperando o token do cookie ou localStorage
+    const cookieToken = Cookies.get('token') || localStorage.getItem('authToken');
+    
+    if (cookieToken) {
+      const decoded = jwt.decode(cookieToken) as { id: string };
+      setUserId(decoded?.id || null);  // Armazena o id do usuário do token decodificado
+    }
+  }, []);
+
+  if (!showBook || !bookData || !userId) return null; // Verifica se a informação está disponível
+
+  const handleRent = async () => {
+    const bookId = bookData._id; // ID do livro
+    const diasEmprestimo = 7; // Número de dias do aluguel
+    const token = Cookies.get('token') || localStorage.getItem('authToken'); // Token para envio no cabeçalho
+
+    if (!token) {
+      alert('Você precisa estar logado para realizar um empréstimo.');
+      return;
+    }
+
+    try {
+      const response = await fetch("http://localhost:5000/api/loans", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, // Envia o token JWT no cabeçalho
+        },
+        body: JSON.stringify({ userId, bookId, dias: diasEmprestimo }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        alert("Empréstimo realizado com sucesso!");
+        onRent(); // Notificar o componente pai para fechar o modal ou atualizar o estado
+        onClose(); // Fecha o modal após o aluguel
+      } else {
+        alert(data.message); // Exibir mensagem de erro caso o empréstimo falhe
+      }
+    } catch (error) {
+      console.error("Erro ao realizar empréstimo:", error);
+      alert("Ocorreu um erro. Tente novamente mais tarde.");
+    }
+  };
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50">
@@ -55,10 +106,10 @@ const BookShowModal: React.FC<BookShowProps> = ({
         </div>
 
         {/* Botão de alugar */}
-        <div className="flex justify-end">
+        <div className="flex justify-end mt-4">
           <button
-            onClick={onRent}
-            className="w-32 bg-blue-500 text-white p-2 rounded-md mt-4 hover:bg-blue-600"
+            onClick={handleRent}
+            className="w-32 bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600"
           >
             Alugar
           </button>

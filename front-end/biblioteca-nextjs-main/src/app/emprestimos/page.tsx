@@ -1,239 +1,175 @@
 'use client'; // Indica que este é um Client Component
 
 import React, { useEffect, useState } from 'react';
-import { RiAddCircleFill, RiDeleteBin6Fill } from 'react-icons/ri';
-import HeaderAdm from '@/components/HeaderAdm';
-import router from 'next/router';
+import { RiDeleteBin6Fill } from 'react-icons/ri';
+import { useRouter } from 'next/navigation'; // Importa useRouter da versão de navegação do Next.js 13
 import Cookies from 'js-cookie';
 
 const Emprestimos = () => {
-  // Estado para o valor da pesquisa
   const [query, setQuery] = useState('');
+  const [student, setStudent] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false); // Flag para verificar se é no cliente
 
-  // Estado para ordenar os alunos por nome ou RA
-  const [sortOrder, setSortOrder] = useState('asc'); // "asc" ou "desc"
-  const [sortedBy, setSortedBy] = useState('name'); // Pode ser "name" ou "ra"
-
-  // Dados de exemplo para os alunos
-  const [students, setStudents] = useState([
-    {
-      id: 1,
-      ra: '2456',
-      name: 'Sarah da Silva Pereira',
-      status: 'OK',
-      emprestimos: [
-        {
-          livroId: 1,
-          titulo: 'O Senhor dos Anéis',
-          dataEmprestimo: '2024-10-01',
-          dataDevolucao: '2024-10-15',
-        },
-        {
-          livroId: 2,
-          titulo: 'Harry Potter e a Pedra Filosofal',
-          dataEmprestimo: '2024-10-05',
-          dataDevolucao: '2024-10-20',
-        },
-      ],
-    },
-    {
-      id: 2,
-      ra: '1234',
-      name: 'João da Silva',
-      status: 'OK',
-      emprestimos: [
-        {
-          livroId: 3,
-          titulo: 'O Hobbit',
-          dataEmprestimo: '2024-09-15',
-          dataDevolucao: '2024-10-10',
-        },
-      ],
-    },
-  ]);
-
-  // Função para filtrar os alunos
-  const filteredStudents = students.filter((student) => {
-    return (
-      student.name.toLowerCase().includes(query.toLowerCase()) ||
-      student.ra.includes(query.toLowerCase())
-    );
-  });
-
-  // Função para ordenar os alunos
-  const sortStudents = (students: Student[]) => {
-    return students.sort((a, b) => {
-      const valueA = sortedBy === 'name' ? a.name : a.ra;
-      const valueB = sortedBy === 'name' ? b.name : b.ra;
-
-      if (sortOrder === 'asc') {
-        return valueA.localeCompare(valueB);
-      } else {
-        return valueB.localeCompare(valueA);
-      }
-    });
-  };
-
-  // Função para lidar com a mudança no campo de pesquisa
-  const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
-  };
-
-  // Função para adicionar empréstimo
-  const addEmprestimo = (
-    studentId: number,
-    livroId: number,
-    titulo: string,
-  ) => {
-    const updatedStudents = students.map((student) => {
-      if (student.id === studentId) {
-        const newEmprestimo = {
-          livroId,
-          titulo,
-          dataEmprestimo: new Date().toISOString().split('T')[0],
-          dataDevolucao: '', // Pode ser preenchido depois
-        };
-        return {
-          ...student,
-          emprestimos: [...student.emprestimos, newEmprestimo],
-        };
-      }
-      return student;
-    });
-    setStudents(updatedStudents);
-  };
+  const router = useRouter(); // useRouter no lado do cliente
 
   // Função para remover empréstimo
-  const removeEmprestimo = (studentId: number, livroId: number) => {
-    const updatedStudents = students.map((student) => {
-      if (student.id === studentId) {
-        const updatedEmprestimos = student.emprestimos.filter(
-          (emp) => emp.livroId !== livroId,
-        );
-        return { ...student, emprestimos: updatedEmprestimos };
+  const removeEmprestimo = async (titulo: string) => {
+    if (!student) return;
+
+    const token = Cookies.get('token');
+    if (!token) {
+      console.error('Token não encontrado');
+      return;
+    }
+
+    try {
+      // Chama a API para remover o empréstimo
+      const response = await fetch('http://localhost:5000/api/loans', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ titulo }), // Envia o título como parte do corpo
+      });
+
+      if (!response.ok) {
+        throw new Error('Erro ao remover o empréstimo');
       }
-      return student;
-    });
-    setStudents(updatedStudents);
-  };
 
-  // Função para alternar a ordenação
-  const handleSortChange = (sortBy: string) => {
-    const newSortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-    setSortOrder(newSortOrder);
-    setSortedBy(sortBy);
-  };
+      // Atualiza os empréstimos no estado local
+      const updatedEmprestimos = student.emprestimos.filter(
+        (emp: any) => emp.titulo !== titulo
+      );
 
-  // Usando o useRouter para navegar entre páginas
-  // const router = useRouter();
-
-  // Função para redirecionar para a página de empréstimos atrasados
-  const navigateToAtrasados = () => {
-    router.push('/');
+      setStudent({
+        ...student,
+        emprestimos: updatedEmprestimos,
+      });
+    } catch (error) {
+      console.error('Erro ao remover o empréstimo:', error);
+    }
   };
 
   useEffect(() => {
+    setIsClient(true); // Marca que o componente foi montado no cliente
+
     const token = Cookies.get('token');
     if (!token) {
+      console.log('Token não encontrado. Redirecionando para login...');
       router.push('/login');
+      return;
     }
-  }, []);
+
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/loans', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          throw new Error('Erro ao buscar dados do aluno');
+        }
+
+        const alunoLogado = await response.json();
+        setStudent(alunoLogado); // Armazena os dados do aluno
+      } catch (error) {
+        console.error('Erro ao obter dados do aluno:', error);
+        router.push('/login'); // Redireciona para login se houver erro
+      } finally {
+        setLoading(false); // Finaliza o carregamento
+      }
+    };
+
+    fetchData();
+  }, [router]);
+
+  if (!isClient) {
+    return null; // Retorna nada enquanto não está no cliente
+  }
+
+  const filteredEmprestimos = student
+    ? student.emprestimos.filter((emp: any) => {
+        return (
+          emp.titulo.toLowerCase().includes(query.toLowerCase()) ||
+          emp.dataEmprestimo.includes(query) ||
+          emp.dataDevolucao.includes(query)
+        );
+      })
+    : [];
+
+  if (loading) {
+    return <div>Carregando...</div>; // Exibe um loading enquanto os dados estão sendo carregados
+  }
 
   return (
     <div>
-      <HeaderAdm />
       <div className="pt-24">
         <div className="grid grid-cols-8 gap-6">
           <div className="col-start-1 col-span-8 p-6 mx-auto">
             <div className="flex items-center mb-4 justify-between">
               <div className="flex items-center gap-4">
-                <h1 className="text-3xl">Gerenciar Empréstimos</h1>
+                <h1 className="text-3xl">Meus Empréstimos</h1>
               </div>
               <div className="flex w-1/3 justify-end">
                 {/* Campo de Pesquisa */}
                 <input
                   type="text"
-                  placeholder="Pesquisar por nome ou RA"
+                  placeholder="Pesquisar por título ou data"
                   className="p-2 w-full rounded-md border border-gray-300"
                   value={query}
-                  onChange={handleSearch}
+                  onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
             </div>
 
-            <table className="w-full table-auto border-collapse">
+            {/* Tabela de Empréstimos */}
+            <table className="w-full table-auto border-collapse justify-items-center justify-center">
               <thead>
                 <tr>
-                  <th
-                    className="p-3 border-b rounded-md min-w-[150px] cursor-pointer"
-                    onClick={() => handleSortChange('ra')}
-                  >
-                    RA {sortedBy === 'ra' && (sortOrder === 'asc' ? '↑' : '↓')}
+                  <th className="p-3 border-b rounded-md min-w-[150px]">
+                    Título
                   </th>
-                  <th
-                    className="p-3 border-b rounded-md min-w-[300px] cursor-pointer"
-                    onClick={() => handleSortChange('name')}
-                  >
-                    Nome{' '}
-                    {sortedBy === 'name' && (sortOrder === 'asc' ? '↑' : '↓')}
+                  <th className="p-3 border-b rounded-md min-w-[150px]">
+                    Data de Retirada
                   </th>
-                  <th className="p-3 border-b rounded-md min-w-[300px]">
-                    Empréstimos
+                  <th className="p-3 border-b rounded-md min-w-[150px]">
+                    Data de Devolução
                   </th>
-                  <th className="p-3 border-b rounded-md min-w-[300px]">
+                  <th className="p-3 border-b rounded-md min-w-[150px]">
                     Ações
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {sortStudents(filteredStudents).map((student) => (
-                  <tr key={student.id}>
-                    <td className="border-b p-2 text-center">{student.ra}</td>
-                    <td className="border-b p-2 text-center">{student.name}</td>
-                    <td className="border-b p-2 text-center">
-                      <ul>
-                        {student.emprestimos.length > 0 ? (
-                          student.emprestimos.map((emp) => (
-                            <li key={emp.livroId}>
-                              {emp.titulo} - Devolução:
-                              {emp.dataDevolucao}
-                              <button
-                                className="bg-red-500 text-white py-1 px-2 ml-2 rounded"
-                                onClick={() =>
-                                  removeEmprestimo(student.id, emp.livroId)
-                                }
-                              >
-                                <RiDeleteBin6Fill />
-                              </button>
-                            </li>
-                          ))
-                        ) : (
-                          <span>Nenhum empréstimo</span>
-                        )}
-                      </ul>
-                    </td>
-                    <td className="border-b p-2 text-center">
-                      <button
-                        className="bg-green-500 text-white py-1 px-4 rounded flex items-center gap-2"
-                        onClick={() => addEmprestimo(student.id, 3, 'O Hobbit')}
-                      >
-                        <RiAddCircleFill /> Adicionar Empréstimo
-                      </button>
+                {filteredEmprestimos.length > 0 ? (
+                  filteredEmprestimos.map((emp: any) => (
+                    <tr key={emp.titulo}>
+                      <td className="border-b p-2 text-center align-middle">{emp.titulo}</td>
+                      <td className="border-b p-2 text-center align-middle">{emp.dataEmprestimo}</td>
+                      <td className="border-b p-2 text-center align-middle">{emp.dataDevolucao}</td>
+                      <td className="border-b p-2 text-center align-middle">
+                        <button
+                          className="bg-red-500 text-white py-1 px-2 rounded"
+                          onClick={() => removeEmprestimo(emp.titulo)}
+                        >
+                          <RiDeleteBin6Fill />
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4} className="text-center p-4">
+                      Nenhum empréstimo encontrado.
                     </td>
                   </tr>
-                ))}
+                )}
               </tbody>
             </table>
-
-            {/* Botão para acessar os empréstimos atrasados */}
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={navigateToAtrasados}
-                className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600"
-              >
-                Ver Empréstimos Atrasados
-              </button>
-            </div>
           </div>
         </div>
       </div>
