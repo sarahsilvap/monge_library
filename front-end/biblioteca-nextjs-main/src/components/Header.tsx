@@ -18,18 +18,16 @@ import React, { useEffect, useState } from 'react';
 
 interface DecodedToken {
   id: string;
-  roles: string[]; // ou o tipo esperado para roles
-  [key: string]: unknown; // para quaisquer outros atributos no token
+  roles: string[];
+  [key: string]: unknown;
 }
 
 const Header = () => {
   const path = usePathname();
-
   const router = useRouter();
 
-  const [onMouseEnter, setOnMouseEnter] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [isClient, setIsClient] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
@@ -37,9 +35,6 @@ const Header = () => {
 
     if (cookieToken) {
       const decoded = jwt.decode(cookieToken) as DecodedToken | null;
-
-      console.log(decoded);
-
       setIsAdmin(
         decoded?.roles.some((role) => role === 'Administrador') ?? false
       );
@@ -47,7 +42,8 @@ const Header = () => {
   }, []);
 
   return (
-    <div className="bg-[#204637] h-44 grid grid-cols-4 relative shadow-2xl">
+    <div className="bg-[#204637] h-44 grid grid-cols-3 relative shadow-2xl">
+      {/* Logo */}
       <div className="my-auto mx-auto">
         <Image
           src={'/image/logobranco.png'}
@@ -57,62 +53,38 @@ const Header = () => {
         />
       </div>
 
-      <div className="flex flex-col mx-auto col-span-2">
-        <div className="my-auto mb-10 relative flex items-center gap-5">
-          <div className="absolute right-4 mt-1 md:right-2">
-            <button>
-              <SearchIcon fill="grey" size={20} height={20} width={20} />
-            </button>
-          </div>
+      {/* Menu */}
+      <div className="flex flex-col justify-center mx-auto">
+        {/* Barra de pesquisa */}
+        <div className="relative flex items-center mb-6">
           <input
             className="rounded-md p-2 pr-10 w-[40vw] placeholder:text-sm"
             placeholder="Busque por um título, autor ou editora"
           />
+          <div className="absolute right-4 mt-1">
+            <button>
+              <SearchIcon fill="grey" size={20} height={20} width={20} />
+            </button>
+          </div>
         </div>
 
-        <div className="flex gap-32 mx-auto mb-4">
+        {/* Links do menu */}
+        <div className="flex justify-center">
           <Link
-            className={
-              path === '/' || path === '/'
-                ? 'text-gray-400 text-sm'
-                : 'text-white hover:text-gray-400 text-sm'
-            }
+            className={`text-sm ${
+              path === '/'
+                ? 'text-gray-400'
+                : 'text-white hover:text-gray-400'
+            }`}
             href={'/'}
           >
             PÁGINA INICIAL
           </Link>
-
-          <div
-            className="relative min-h-8"
-            onMouseEnter={() => setOnMouseEnter(true)}
-            onMouseLeave={() => setOnMouseEnter(false)}
-          >
-            <Dropdown isOpen={onMouseEnter}>
-              <DropdownTrigger>
-                <Link href="/catalogo">
-                  <button
-                    className={
-                      path === '/catalogo'
-                        ? 'text-gray-400 text-sm'
-                        : 'text-white hover:text-gray-400 text-sm'
-                    }
-                  >
-                    CATÁLOGO
-                  </button>
-                </Link>
-              </DropdownTrigger>
-              <DropdownMenu>
-                <DropdownItem>TERROR</DropdownItem>
-                <DropdownItem>ROMANCE</DropdownItem>
-                <DropdownItem>FICÇÃO</DropdownItem>
-                <DropdownItem>NÃO-FICÇÃO</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
         </div>
       </div>
 
-      <div className="my-12 -ml-20">
+      {/* Perfil / Login */}
+      <div className="my-auto flex justify-end pr-96 pb-11">
         {isClient && Cookies.get('token') && isAdmin && (
           <Dropdown>
             <DropdownTrigger>
@@ -164,7 +136,7 @@ const Header = () => {
               </Button>
             </DropdownTrigger>
             <DropdownMenu>
-            <DropdownItem
+              <DropdownItem
                 onClick={() => {
                   router.push('/emprestimos');
                 }}

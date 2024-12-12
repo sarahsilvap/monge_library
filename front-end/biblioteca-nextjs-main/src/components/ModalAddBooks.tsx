@@ -66,6 +66,8 @@ const BookAddModal: React.FC<BookAddProps> = ({
     { value: 'Terrir', label: 'Terror' },
     { value: 'Aventura', label: 'Aventura' },
     { value: 'Ficção científica', label: 'Ficção científica' },
+    { value: 'Distopia', label: 'Distopia' },
+    { value: 'Drama', label: 'Drama' },
   ];
 
   const [selectedOption, setSelectedValue] = useState<{

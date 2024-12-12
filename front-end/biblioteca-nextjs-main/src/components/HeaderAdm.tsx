@@ -21,13 +21,7 @@ const HeaderAdm = () => {
 
             <NavbarContent className="hidden sm:flex gap-4" justify="center">
                 <NavbarItem>
-                    <Link color="foreground" href="/">Catálogo</Link>
-                </NavbarItem>
-                <NavbarItem>
                     <Link color="foreground" href="/books">Livros</Link>
-                </NavbarItem>
-                <NavbarItem>
-                    <Link color="foreground" href="/emprestimos">Empréstimos</Link>
                 </NavbarItem>
                 <NavbarItem>
                     <Link color="foreground" href="/">Alunos</Link>
