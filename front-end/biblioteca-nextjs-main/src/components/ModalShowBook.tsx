@@ -1,54 +1,63 @@
-'use client';
+'use client'; // Direciona o Next.js a tratar esse arquivo como um componente do lado do cliente (client-side), necessário para hooks e interações dinâmicas
 
-import React, { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
-import jwt from 'jsonwebtoken';
+import React, { useEffect, useState } from 'react'; // Importa o React e os hooks useEffect e useState
+import Cookies from 'js-cookie'; // Importa o módulo js-cookie para ler e escrever cookies
+import jwt from 'jsonwebtoken'; // Importa o módulo jwt para decodificar o token JWT
 
 interface BookShowProps {
-  showBook: boolean;
-  bookData: any;
-  onClose: () => void;
-  onRent: () => void;
+  showBook: boolean; // Define se o modal de exibição do livro será mostrado ou não
+  bookData: any;  // Dados do livro a serem exibidos no modal
+  onClose: () => void; // Função que será chamada para fechar o modal
+  onRent: () => void; // Função que será chamada após o aluguel do livro (para atualizar o estado do componente pai)
 }
 
 const BookShowModal: React.FC<BookShowProps> = ({ showBook, bookData, onClose, onRent }) => {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null); // Estado para armazenar o ID do usuário
+  const [isAdmin, setIsAdmin] = useState(false); // Estado para determinar se o usuário é administrador
+
 
   useEffect(() => {
-    // Recuperando o token do cookie ou localStorage
+    // Hook que é executado quando o componente é montado
     const cookieToken = Cookies.get('token') || localStorage.getItem('authToken');
+    // Recupera o token JWT do cookie ou do localStorage
 
     if (cookieToken) {
       const decoded = jwt.decode(cookieToken) as { id: string; roles: string[] } | null;
-      setUserId(decoded?.id || null); // Armazena o id do usuário do token decodificado
-      setIsAdmin(decoded?.roles?.some((role) => role === 'Administrador') || false); // Verifica se o usuário é admin
-    }
-  }, []);
+      // Decodifica o token JWT para obter o ID do usuário e as funções/roles
 
-  if (!showBook || !bookData) return null; // Verifica se a informação está disponível
+      setUserId(decoded?.id || null); // Armazena o id do usuário do token decodificado
+      setIsAdmin(decoded?.roles?.some((role) => role === 'Administrador') || false); // Verifica se o usuário tem a role de 'Administrador' e atualiza o estado de isAdmin
+    }
+  }, []); // A dependência vazia faz o hook rodar apenas uma vez, quando o componente é montado
+
+  if (!showBook || !bookData) return null; // Se showBook for falso ou bookData não estiver disponível, o modal não será renderizado
+
 
   const handleRent = async () => {
-    const bookId = bookData._id; // ID do livro
-    const diasEmprestimo = 7; // Número de dias do aluguel
+    const bookId = bookData._id; // Obtém o ID do livro que será alugado
+    const diasEmprestimo = 7; // Define o número de dias do aluguel
     const token = Cookies.get('token') || localStorage.getItem('authToken'); // Token para envio no cabeçalho
+    // Obtém o token JWT do cookie ou localStorage
 
     if (!token) {
       alert('Você precisa estar logado para realizar um empréstimo.');
+      // Caso não tenha token (usuário não está logado), exibe um alerta
       return;
     }
 
     try {
       const response = await fetch('http://localhost:5000/api/loans', {
+        // Envia uma requisição POST para a API de empréstimos
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`, // Envia o token JWT no cabeçalho
         },
         body: JSON.stringify({ userId, bookId, dias: diasEmprestimo }),
+        // Envia o corpo da requisição com os dados necessários: ID do usuário, ID do livro e dias de aluguel
       });
 
-      const data = await response.json();
+      const data = await response.json(); // Recebe a resposta da API e converte para JSON
 
       if (data.success) {
         alert('Empréstimo realizado com sucesso!');
@@ -58,8 +67,8 @@ const BookShowModal: React.FC<BookShowProps> = ({ showBook, bookData, onClose, o
         alert(data.message); // Exibir mensagem de erro caso o empréstimo falhe
       }
     } catch (error) {
-      console.error('Erro ao realizar empréstimo:', error);
-      alert('Ocorreu um erro. Tente novamente mais tarde.');
+      console.error('Erro ao realizar empréstimo:', error);  // Se ocorrer um erro durante a requisição, loga o erro
+      alert('Ocorreu um erro. Tente novamente mais tarde.'); // Exibe um alerta de erro
     }
   };
 
