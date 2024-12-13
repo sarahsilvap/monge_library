@@ -1,72 +1,76 @@
 /* eslint-disable @next/next/no-img-element */
+// Desativa a regra do ESLint que proíbe o uso da tag <img> sem o atributo alt, permitindo o uso de imagens sem esse atributo, conforme a necessidade.
+
 'use client'; // Este é um componente de cliente (React Client Component)
+// Indica que este componente React será renderizado no lado do cliente, ou seja, no navegador, não no servidor.
 
-import React, { useState, useEffect } from 'react';
-import { BiSolidBookAdd } from 'react-icons/bi';
-import HeaderAdm from '@/components/HeaderAdm';
-import BookAddModal from '@/components/ModalAddBooks';
-import { Spinner } from '@nextui-org/react';
+import React, { useState, useEffect } from 'react'; // Importa o React e os hooks useState e useEffect do React. useState é usado para criar e gerenciar estados locais, e useEffect para lidar com efeitos colaterais como buscar dados ou executar ações ao carregar o componente.
+import { BiSolidBookAdd } from 'react-icons/bi'; // Importa o ícone BiSolidBookAdd da biblioteca react-icons, que será usado no botão de adicionar livro.
+import HeaderAdm from '@/components/HeaderAdm'; // Importa o componente HeaderAdm, que provavelmente contém a estrutura de cabeçalho da página de administração, como navegação e título.
+import BookAddModal from '@/components/ModalAddBooks'; // Importa o componente BookAddModal, usado para abrir um modal onde o usuário pode adicionar ou editar um livro.
+import { Spinner } from '@nextui-org/react'; // Importa o componente Spinner da biblioteca @nextui/org/react, usado para mostrar uma animação de carregamento enquanto os dados são carregados.
 
-const AdminPage = () => {
-  const [query, setQuery] = useState(''); // Estado para armazenar a pesquisa
+const AdminPage = () => { // Declara o componente funcional AdminPage.
+  const [query, setQuery] = useState(''); // Estado para armazenaro valor da pesquisa (inicialmente vazio).
+
   const [showForm, setShowForm] = useState(false); // Controla a visibilidade do modal
-  const [editingBook, setEditingBook] = useState<Books | null>(null); // Livro a ser editado
-  const [books, setBooks] = useState<Books[] | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [editingBook, setEditingBook] = useState<Books | null>(null);   // Cria um estado chamado editingBook, que armazena o livro que está sendo editado (inicialmente nulo).
+  const [books, setBooks] = useState<Books[] | null>(null); // Cria um estado chamado books, que armazenará a lista de livros (inicialmente nulo).
+  const [loading, setLoading] = useState(true); // Cria um estado chamado loading, que indica se os dados estão sendo carregados (inicialmente verdadeiro).
 
-  const fetchBooks = async () => {
-    try {
-      setLoading(true);
+  const fetchBooks = async () => {  // Função assíncrona para buscar os livros do backend.
+    try { 
+      setLoading(true); // Marca o início do carregamento.
 
-      const response = await fetch('http://localhost:5000/api/books'); // URL do seu backend
-      const data = await response.json();
+      const response = await fetch('http://localhost:5000/api/books'); // Faz a requisição para obter os livros do backend.
+      const data = await response.json(); // Converte a resposta em JSON.
       setBooks(data); // Atualiza o estado com os livros do backend
-    } catch (error) {
+    } catch (error) { // Se ocorrer erro, loga no console.
       console.error('Erro ao carregar os livros:', error);
     } finally {
-      setLoading(false);
+      setLoading(false); // Marca o término do carregamento, independentemente de sucesso ou falha.
     }
   };
 
   useEffect(() => {
-    fetchBooks();
+    fetchBooks(); // Chama a função fetchBooks para buscar os livros ao carregar o componente.
   }, []);
 
   // Função para filtrar os livros
   const filteredBooks = books
     ? books.filter(
         (book) =>
-          book.title.toLowerCase().includes(query.toLowerCase()) ||
+          book.title.toLowerCase().includes(query.toLowerCase()) || // Filtra livros pelo título ou autor, ignorando maiúsculas/minúsculas. 
           book.author.toLowerCase().includes(query.toLowerCase())
       )
     : [];
 
   // Função busca
   const handleSearch = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setQuery(event.target.value);
+    setQuery(event.target.value); // Atualiza o estado query com o valor digitado no campo de pesquisa.
   };
 
   // Função para abrir o modal de adicionar um novo livro
   const handleAddBookClick = () => {
     setEditingBook(null); // Garante que estamos criando um livro novo
-    setShowForm(true);
+    setShowForm(true); // Exibe o modal.
   };
 
   // Função para edição de um livro
   const handleEditBook = (book: Books) => {
     setEditingBook(book); // Preenche o modal com os dados do livro a ser editado
-    setShowForm(true);
+    setShowForm(true); // Exibe o modal.
   };
 
   // Função para fechar o modal
   const handleCloseModal = () => {
-    setEditingBook(null);
-    setShowForm(false);
+    setEditingBook(null); // Limpa o estado editingBook.
+    setShowForm(false); // Fecha o modal.
   };
 
   // Função para salvar ou atualizar um livro
   const handleSubmit = async () => {
-    await fetchBooks();
+    await fetchBooks(); // Recarrega a lista de livros após salvar ou atualizar um livro.
 
     setShowForm(false); // Fecha o modal
   };
@@ -75,24 +79,24 @@ const AdminPage = () => {
   const handleDeleteBook = async (bookId: string) => {
     try {
       const response = await fetch(
-        `http://localhost:5000/api/books/${bookId}`,
+        `http://localhost:5000/api/books/${bookId}`,  // Faz uma requisição DELETE para excluir o livro com o ID especificado.
         {
           method: 'DELETE',
           headers: {
-            'Content-Type': 'multipart/form-data',
+            'Content-Type': 'multipart/form-data', // Define o cabeçalho para indicar o tipo de conteúdo.
           },
         }
       );
 
       if (response.ok) {
-        setBooks((books ?? []).filter((book) => book._id !== bookId));
-        alert('Livro excluído com sucesso!');
+        setBooks((books ?? []).filter((book) => book._id !== bookId)); // Atualiza a lista de livros removendo o livro excluído.
+        alert('Livro excluído com sucesso!'); // Exibe um alerta de sucesso.
       } else {
-        alert('Erro ao excluir o livro!');
+        alert('Erro ao excluir o livro!'); // Exibe um alerta de erro se a requisição falhar.
       }
     } catch (error) {
-      console.error('Erro ao enviar a requisição de exclusão', error);
-      alert('Erro na requisição.');
+      console.error('Erro ao enviar a requisição de exclusão', error); // Loga o erro no console.
+      alert('Erro na requisição.'); // Exibe um alerta de erro.
     }
   };
 
