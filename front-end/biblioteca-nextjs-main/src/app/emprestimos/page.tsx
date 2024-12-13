@@ -1,35 +1,35 @@
 'use client'; // Indica que este é um Client Component
 
 import React, { useEffect, useState } from 'react';
-import { RiDeleteBin6Fill } from 'react-icons/ri';
+import { RiDeleteBin6Fill } from 'react-icons/ri';  // Importa o ícone de lixeira para deletar empréstimos
 import { useRouter } from 'next/navigation'; // Importa useRouter da versão de navegação do Next.js 13
-import Cookies from 'js-cookie';
+import Cookies from 'js-cookie'; // Para gerenciar cookies no lado do cliente
 
 const Emprestimos = () => {
-  const [query, setQuery] = useState('');
-  const [student, setStudent] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [query, setQuery] = useState(''); // Estado para armazenar o termo de pesquisa
+  const [student, setStudent] = useState<any>(null); // Estado para armazenar os dados do aluno
+  const [loading, setLoading] = useState(true); // Estado para controlar o carregamento dos dados
   const [isClient, setIsClient] = useState(false); // Flag para verificar se é no cliente
 
-  const router = useRouter(); // useRouter no lado do cliente
+  const router = useRouter(); // Instância do useRouter para navegação
 
   // Função para remover empréstimo
   const removeEmprestimo = async (titulo: string) => {
     if (!student) return;
 
-    const token = Cookies.get('token');
+    const token = Cookies.get('token'); // Obtém o token armazenado no cookie
     if (!token) {
       console.error('Token não encontrado');
       return;
     }
 
     try {
-      // Chama a API para remover o empréstimo
+      // Faz a requisição para a API para remover o empréstimo
       const response = await fetch('http://localhost:5000/api/loans', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
+          Authorization: `Bearer ${token}`, // Envia o token no cabeçalho para autenticação
         },
         body: JSON.stringify({ titulo }), // Envia o título como parte do corpo
       });
@@ -38,14 +38,14 @@ const Emprestimos = () => {
         throw new Error('Erro ao remover o empréstimo');
       }
 
-      // Atualiza os empréstimos no estado local
+      // Atualiza a lista de empréstimos localmente após a remoção
       const updatedEmprestimos = student.emprestimos.filter(
         (emp: any) => emp.titulo !== titulo
       );
 
       setStudent({
         ...student,
-        emprestimos: updatedEmprestimos,
+        emprestimos: updatedEmprestimos, // Atualiza o estado de 'student' com os empréstimos restantes
       });
     } catch (error) {
       console.error('Erro ao remover o empréstimo:', error);
@@ -55,18 +55,19 @@ const Emprestimos = () => {
   useEffect(() => {
     setIsClient(true); // Marca que o componente foi montado no cliente
 
-    const token = Cookies.get('token');
+    const token = Cookies.get('token'); // Verifica se o token está disponível nos cookies
     if (!token) {
-      console.log('Token não encontrado. Redirecionando para login...');
-      router.push('/login');
+      console.log('Token não encontrado. Redirecionando para login...'); 
+      router.push('/login');  // Redireciona para o login se o token não for encontrado
       return;
     }
 
+    // Função para buscar os dados do aluno
     const fetchData = async () => {
       try {
         const response = await fetch('http://localhost:5000/api/loans', {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Envia o token para autenticação na API
           },
         });
 
@@ -74,7 +75,7 @@ const Emprestimos = () => {
           throw new Error('Erro ao buscar dados do aluno');
         }
 
-        const alunoLogado = await response.json();
+        const alunoLogado = await response.json(); // Obtém os dados do aluno da resposta
         setStudent(alunoLogado); // Armazena os dados do aluno
       } catch (error) {
         console.error('Erro ao obter dados do aluno:', error);
@@ -84,13 +85,14 @@ const Emprestimos = () => {
       }
     };
 
-    fetchData();
-  }, [router]);
+    fetchData(); // Chama a função para buscar os dados assim que o componente for montado
+  }, [router]); // O useEffect é executado apenas uma vez após o componente ser montado
 
   if (!isClient) {
     return null; // Retorna nada enquanto não está no cliente
   }
 
+  // Filtra os empréstimos com base na consulta de pesquisa
   const filteredEmprestimos = student
     ? student.emprestimos.filter((emp: any) => {
         return (

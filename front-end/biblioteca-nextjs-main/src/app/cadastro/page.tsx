@@ -1,11 +1,11 @@
-'use client';
+'use client'; // Este componente é um "client-side" React Component, ou seja, deve ser renderizado no cliente.
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { SlArrowLeft } from 'react-icons/sl';
-import { Button } from '@nextui-org/react';
-import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
+import Image from 'next/image'; // Importa o componente Image do Next.js para exibição de imagens
+import Link from 'next/link';  // Importa o componente Link do Next.js para navegação entre páginas
+import { SlArrowLeft } from 'react-icons/sl'; // Importa um ícone de seta para a esquerda
+import { Button } from '@nextui-org/react';  // Importa o componente Button da biblioteca NextUI
+import { useForm } from 'react-hook-form'; // Importa o hook 'useForm' da biblioteca react-hook-form para gerenciar formulários
+import { useRouter } from 'next/navigation'; // Importa o hook 'useRouter' do Next.js para navegar entre páginas
 
 interface FormData {
     nome: string;
@@ -24,31 +24,31 @@ interface FormData {
 
 const Cadastro = () => {
     const {
-        register,
-        handleSubmit,
-        getValues,
-        formState: { errors },
-    } = useForm<FormData>();
+        register,  // Função do react-hook-form para registrar os campos do formulário
+        handleSubmit, // Função para lidar com o envio do formulário
+        getValues, // Função para acessar os valores atuais dos campos do formulário
+        formState: { errors }, // Objeto que contém erros de validação dos campos
+    } = useForm<FormData>(); // Inicializa o hook do react-hook-form com os dados definidos na interface FormData
 
-    const router = useRouter();
+    const router = useRouter(); // Cria uma instância do useRouter para navegar entre páginas
 
-    const sendForm = async (data: FormData) => {
+    const sendForm = async (data: FormData) => { // Função para enviar o formulário
         try {
-            const response = await fetch('http://localhost:5000/api/auth/register', {
+            const response = await fetch('http://localhost:5000/api/auth/register', { // Envia os dados do formulário para o backend
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(data),
+                body: JSON.stringify(data), // Converte os dados para JSON
             });
 
-            if (response.ok) {
-                alert('Usuário criado com sucesso.');
+            if (response.ok) { // Se a resposta for bem-sucedida
+                alert('Usuário criado com sucesso.'); // Exibe uma mensagem de sucesso
 
-                router.push('/login');
+                router.push('/login'); // Redireciona para a página de login
             }
         } catch (error) {
-            console.log(error);
+            console.log(error);  // Se ocorrer um erro, ele é mostrado no console
         }
     };
 
