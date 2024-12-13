@@ -1,50 +1,50 @@
-'use client';
+'use client'; // Indica que este é um Client Component
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { SlArrowLeft } from 'react-icons/sl';
-import { Button } from '@nextui-org/react';
-import { useForm } from 'react-hook-form';
-import { useRouter } from 'next/navigation';
-import Cookies from 'js-cookie';
+import Image from 'next/image'; // Importa o componente de imagem do Next.js, que é otimizado para renderização no lado do cliente.
+import Link from 'next/link';  // Importa o componente Link do Next.js para navegação entre páginas.
+import { SlArrowLeft } from 'react-icons/sl';  // Importa o ícone de seta para voltar da biblioteca react-icons.
+import { Button } from '@nextui-org/react'; // Importa o componente Button da biblioteca @nextui-org/react.
+import { useForm } from 'react-hook-form'; // Importa o hook useForm do react-hook-form para gerenciamento de formulários.
+import { useRouter } from 'next/navigation'; // Importa o hook useRouter para navegação no Next.js.
+import Cookies from 'js-cookie'; // Importa a biblioteca js-cookie para manipulação de cookies no lado do cliente.
 
 interface FormData {
-  email: string;
-  senha: string;
+  email: string;  // Define o tipo para o campo 'email' como uma string.
+  senha: string; // Define o tipo para o campo 'senha' como uma string.
 }
 
-const Login = () => {
+const Login = () => { // Define o componente funcional Login.
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<FormData>();
+    register, // Função para registrar campos de entrada do formulário.
+    handleSubmit, // Função para processar a submissão do formulário.
+    formState: { errors }, // Estado do formulário, incluindo os erros de validação.
+  } = useForm<FormData>(); // Chama o hook useForm para gerenciar o estado e a validação do formulário.
 
-  const router = useRouter();
+  const router = useRouter(); // Cria uma instância do useRouter para navegação programática entre as páginas.
 
-  const sendForm = async (data: FormData) => {
+  const sendForm = async (data: FormData) => { // Função assíncrona chamada ao enviar o formulário.
     try {
-      console.log("foi")
+      console.log("foi") // Exibe "foi" no console para depuração, indicando que o formulário foi enviado.
 
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch('http://localhost:5000/api/auth/login', { // Faz uma requisição POST para a API de login.
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json', // Define o tipo de conteúdo da requisição como JSON.
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(data), // Converte os dados do formulário para o formato JSON e os envia no corpo da requisição.
       });
 
-      if (!response.ok) {
-        alert('Erro no login. Verifique suas credenciais.');
+      if (!response.ok) { // Verifica se a resposta da API é bem-sucedida.
+        alert('Erro no login. Verifique suas credenciais.'); // Exibe um alerta se a resposta for negativa.
       }
 
-      const { token } = await response.json();
+      const { token } = await response.json(); // Converte a resposta JSON da API e extrai o token.
 
-      Cookies.set('token', token, { expires: 0.04 });
+      Cookies.set('token', token, { expires: 0.04 });  // Armazena o token no cookie com uma expiração de 0.04 dias (cerca de 1 hora).
 
-      router.push('/');
+      router.push('/'); // Redireciona o usuário para a página principal após o login bem-sucedido.
     } catch (error) {
-      console.log(error);
+      console.log(error); // Exibe qualquer erro no console caso ocorra durante a requisição.
     }
   };
 
